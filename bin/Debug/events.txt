@@ -1,0 +1,30 @@
+Number, // 0-9
+Character, // a-z
+Float_e_power, // 0-9
+Char_number, // 0-255
+Literal_start, // '
+Literal_char, //  any char, no \n or ' 
+Literal_special,// '
+Literal_end,// '
+Identifier_start,// _,a-z
+Identifier_char,// _,a-z,0-9
+Curly_open,// {
+Bracket_open,// (
+Square_open,// [
+Curly_closed,// }
+Bracket_closed,// )
+Square_closed,// ]
+Plus,// +
+Minus,// -
+Asterisk,// *
+Slash,// /
+Equal,// =
+Greater,// >
+Less,// <
+Colon,// :
+Hat,// ^
+At,// @
+Semicolon,// ;
+Space,// ' '
+EOL,// \n
+EOF,// i = length

@@ -1,0 +1,36 @@
+Number_sign, // -+
+Number_char, // 0-9
+Int_char, // 0-9
+HexInt_char, //a-f, 0-9
+Float_char, // 0-9
+Float_e_sign, // +-
+Float_e_power, // 0-9
+Char_number, // 0-255
+Literal_start, // '
+Literal_char, //  any char, no \n or ' 
+Literal_special,// '
+Literal_end,// '
+Identifier_start,// _,a-z
+Identifier_char,// _,a-z,0-9
+Comment_curly,// {
+Comment_double,// (*
+Comment_slash,// //
+Comment_end_curly,// }
+Comment_preend_double,// *
+Comment_end_double,// )
+Comment_end_slash,// \n
+Plus,// +
+Minus,// -
+Asterisk,// *
+Slash,// /
+Equal,// =
+Greater,// >
+Less,// <
+GreaterEq,// >=
+LessEq,// <=
+NotEq,// <>
+Becomes,// :=
+Semicolon,// ;
+Space,// ' '
+EOL,// \n
+EOF,// i = length
