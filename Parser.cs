@@ -11,8 +11,16 @@ namespace Compiler
     {
         public static void PrintExpressionTree(Node tree, string indent, bool last)
         {
-            Console.WriteLine(indent + (last ? "└── " : "├── ") + tree.getVal());
-            indent += last ? "    " : "│   ";
+            if(indent=="")
+            {
+                Console.WriteLine(indent + " " + tree.getVal());
+                indent += last ? " " : "| ";
+            }
+            else
+            {
+                Console.WriteLine(indent + "\\-- " + tree.getVal());
+                indent += last ? "    " : "|   ";
+            }
 
             if (tree is BinOpNode)
             {

@@ -51,6 +51,7 @@ namespace Compiler
         }
         public static string fileText;
         public static bool lexOnly;
+        public static bool expressionOnly;
         public class Lexem
         {
             public int Adress;
@@ -234,31 +235,37 @@ namespace Compiler
         {
             if (args == null || args.Length == 0)
             {
-                fileText = System.IO.File.ReadAllText(@"input.txt");
-                lexOnly = true;
+                fileText = System.IO.File.ReadAllText(@"input.in");
+                expressionOnly = true;
             }
             else
             {
                 foreach (string arg in args)
                 {
                     if (arg == "-l") lexOnly = true;
+                    if (arg == "-e") expressionOnly = true;
                     else fileText = System.IO.File.ReadAllText(@arg);
                 }
+            }
+        }
+        public static void WriteExpression()
+        {
+            try
+            {
+                Lexer lexer = new Lexer(fileText);
+                Parser parser = new Parser(ref lexer);
+                Parser.Node exp = parser.ParseExpression();
+                Parser.PrintExpressionTree(exp, "", true);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
             }
         }
         static void Main(string[] args)
         {
             SetupWithArgs(args);
-            Lexer lexer = new Lexer(fileText);
-            Parser parser = new Parser(ref lexer);
-            Parser.Node exp = parser.ParseExpression();
-            Parser.PrintExpressionTree(exp, "", true);
-            List<Lexem> answers = new List<Lexem>();
-            while (answers.Count == 0 || !(answers.Last().Value == "EOF" && answers.Last().Type == "Divider"))
-            {
-                answers.Add(lexer.NextToken());
-                Console.WriteLine(answers.Last().Value + ' ' + answers.Last().Type);
-            }
+            if (expressionOnly) WriteExpression();
         }
     }
 }
