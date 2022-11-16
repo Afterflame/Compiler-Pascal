@@ -39,8 +39,8 @@ namespace Compiler
         {
             Plus,// +
             Minus,// -
-            Asterisk,// *
-            Slash,// /
+            Multiply,// *
+            Divide,// /
             Equal,// =
             Greater,// >
             Less,// <
@@ -421,13 +421,13 @@ namespace Compiler
                         }));
                         lexerFSM[State.Start].Add(Event.Asterisk, new Action<char>((ch) =>
                         {
-                            aSpecialData.Value = ASpecial.Asterisk;
+                            aSpecialData.Value = ASpecial.Multiply;
                             currentStates.Add(State.Asterisk);
                             currentStates.Remove(State.Start);
                         }));
                         lexerFSM[State.Start].Add(Event.Slash, new Action<char>((ch) =>
                         {
-                            aSpecialData.Value = ASpecial.Slash;
+                            aSpecialData.Value = ASpecial.Divide;
                             currentStates.Add(State.Slash);
                             currentStates.Remove(State.Start);
                         }));
@@ -1013,15 +1013,42 @@ namespace Compiler
         
         public class Parser
         {
-            public class Node
+            public static void PrintExpressionTree(Node tree, string indent, bool last)
             {
+                Console.WriteLine(indent +(last? "└── " : "├── ") + tree.getVal());
+                indent += last ? "    " : "│   ";
 
+                if (tree is BinOpNode)
+                {
+                    PrintExpressionTree((tree as BinOpNode).left, indent, false);
+                    PrintExpressionTree((tree as BinOpNode).right, indent, true);
+                }
+            }
+            public abstract class Node
+            {
+                public abstract string getVal();
             }
             public class BinOpNode : Node
             {
-                Lexem op;
-                Node left;
-                Node right;
+                public Lexem op;
+                public Node left;
+                public Node right;
+                public override string getVal()
+                {
+                    switch (op.Value)
+                    {
+                        case "Plus":
+                            return "+";
+                        case "Minus":
+                            return "-";
+                        case "Multiply":
+                            return "*";
+                        case "Divide":
+                            return "/";
+                    }
+
+                    return op.Value.ToString();
+                }
                 public BinOpNode(Lexem op, Node left, Node right)
                 {
                     this.op = op;
@@ -1031,7 +1058,11 @@ namespace Compiler
             }
             public class NumberNode : Node
             {
-                Lexem lexem;
+                public Lexem lexem;
+                public override string getVal()
+                {
+                    return lexem.Value.ToString();
+                }
                 public NumberNode(Lexem lexem)
                 {
                     this.lexem = lexem;
@@ -1039,7 +1070,11 @@ namespace Compiler
             }
             public class VariableNode : Node
             {
-                Lexem lexem;
+                public Lexem lexem;
+                public override string getVal()
+                {
+                    return lexem.Value.ToString();
+                }
                 public VariableNode(Lexem lexem)
                 {
                     this.lexem = lexem;
@@ -1066,7 +1101,7 @@ namespace Compiler
             {
                 Node left = ParseFactor();
                 Lexem lex = lexer.Token;
-                if (lex.Value == "Asterisk" || lex.Value == "Slash")
+                if (lex.Value == "Multiply" || lex.Value == "Divide")
                 {
                     lexer.NextToken();
                     return new BinOpNode(lex, left, ParseTerm());
@@ -1079,12 +1114,12 @@ namespace Compiler
                 if (lex.Type == "Integer")
                 {
                     lexer.NextToken();
-                    return new NumberNode(lexer.Token);
+                    return new NumberNode(lex);
                 }
                 if (lex.Type == "Identifier")
                 {
                     lexer.NextToken();
-                    return new VariableNode(lexer.Token);
+                    return new VariableNode(lex);
                 }
                 if (lex.Value != null && lex.Value == "Bracket_open" && lex.Type == "Math")
                 {
@@ -1120,6 +1155,7 @@ namespace Compiler
             Lexer lexer = new Lexer(fileText);
             Parser parser = new Parser(ref lexer);
             Parser.Node exp = parser.ParseExpression();
+            Parser.PrintExpressionTree(exp, "", true);
             List<Lexem> answers = new List<Lexem>();
             while (answers.Count == 0 || !(answers.Last().Value == "EOF" && answers.Last().Type == "Divider"))
             {
