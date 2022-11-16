@@ -94,10 +94,11 @@ namespace Compiler
         {
             Node left = ParseTerm();
             Lexem lex = lexer.Token;
-            if (lex.Value == "Plus" || lex.Value == "Minus")
+            while (lex.Value == "Plus" || lex.Value == "Minus")
             {
                 lexer.NextToken();
-                return new BinOpNode(lex, left, ParseExpression());
+                left = new BinOpNode(lex, left, ParseTerm());
+                lex = lexer.Token;
             }
             return left;
         }
@@ -105,10 +106,11 @@ namespace Compiler
         {
             Node left = ParseFactor();
             Lexem lex = lexer.Token;
-            if (lex.Value == "Multiply" || lex.Value == "Divide")
+            while (lex.Value == "Multiply" || lex.Value == "Divide")
             {
                 lexer.NextToken();
-                return new BinOpNode(lex, left, ParseTerm());
+                left = new BinOpNode(lex, left, ParseFactor());
+                lex = lexer.Token;
             }
             return left;
         }

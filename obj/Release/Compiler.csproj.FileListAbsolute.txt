@@ -1,0 +1,8 @@
+D:\source_code\Compiler\Compiler\bin\Release\Compiler.exe.config
+D:\source_code\Compiler\Compiler\bin\Release\Compiler.exe
+D:\source_code\Compiler\Compiler\bin\Release\Compiler.pdb
+D:\source_code\Compiler\Compiler\obj\Release\Compiler.csproj.AssemblyReference.cache
+D:\source_code\Compiler\Compiler\obj\Release\Compiler.csproj.SuggestedBindingRedirects.cache
+D:\source_code\Compiler\Compiler\obj\Release\Compiler.csproj.CoreCompileInputs.cache
+D:\source_code\Compiler\Compiler\obj\Release\Compiler.exe
+D:\source_code\Compiler\Compiler\obj\Release\Compiler.pdb

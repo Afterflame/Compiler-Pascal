@@ -12,6 +12,7 @@ namespace Compiler
         {
             CharRange,
             UnknownSymbol,
+            UnexpectedSymbol,
             InvalidSymbol,
             FactorE,
             OBracketE,
@@ -32,6 +33,9 @@ namespace Compiler
                         break;
                     case Error.InvalidSymbol:
                         text = "Invalid symbol";
+                        break;
+                    case Error.UnexpectedSymbol:
+                        text = "Unexpected symbol";
                         break;
                     case Error.FactorE:
                         text = "Factor expected";
@@ -255,6 +259,8 @@ namespace Compiler
                 Lexer lexer = new Lexer(fileText);
                 Parser parser = new Parser(ref lexer);
                 Parser.Node exp = parser.ParseExpression();
+                if (lexer.Token.Type != "Divider" && (lexer.Token.Value != "EOF" || lexer.Token.Value != "EOL"))
+                    throw new Exception(ErrorConstructor.GetPositionMassage(lexer.Line, lexer.Idx, Error.UnexpectedSymbol));
                 Parser.PrintExpressionTree(exp, "", true);
             }
             catch (Exception ex)
