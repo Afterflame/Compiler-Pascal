@@ -14,12 +14,12 @@ namespace Compiler
             if(indent=="")
             {
                 Console.WriteLine(indent + " " + tree.getVal());
-                indent += last ? " " : "| ";
+                indent += last ? " " : "│ ";
             }
             else
             {
-                Console.WriteLine(indent + "\\-- " + tree.getVal());
-                indent += last ? "    " : "|   ";
+                Console.WriteLine(indent + (last ? "└── " : "├── ") + tree.getVal());
+                indent += last ? "    " : "│   ";
             }
 
             if (tree is BinOpNode)
