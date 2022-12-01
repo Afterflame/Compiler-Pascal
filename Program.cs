@@ -53,188 +53,10 @@ namespace Compiler
                 return text + " at " + line + " " + idx;
             }
         }
-        public static string fileText;
-        public static bool lexOnly;
-        public static bool expressionOnly;
-        public class Lexem
-        {
-            public int Adress;
-            public int Line;
-            public int Index;
-            public string Type = null;
-            public string Value = null;
-            public string Input;
-            public Lexem(int adress, int line, int index, string type, string value, string input = null)
-            {
-                this.Adress = adress;
-                this.Line = line;
-                this.Index = index;
-                this.Type = type;
-                this.Value = value;
-                this.Input = input;
-            }
-            public string Write()
-            {
-                if (Input == null || Input.Length == 0)
-                    return Line.ToString() + " " + Input.ToString() + " " + Type.ToString() + " " + Value.ToString();
-                else
-                    return Line.ToString() + " " + Input.ToString() + " " + Type.ToString() + " " + Value.ToString() + " " + Input.ToString();
-            }
-        }
-        public enum ASpecial
-        {
-            Plus,// +
-            Minus,// -
-            Multiply,// *
-            Divide,// /
-            Equal,// =
-            Greater,// >
-            Less,// <
-            GreaterEq,// >=
-            LessEq,// <=
-            NotEq,// <>
-            Becomes,// :=
-            Bracket_open,// :=
-            Bracket_closed,// :=
-        }
-        public enum DSpecial
-        {
-            Space,
-            Semicolon,
-            EOL,
-            EOF,
-        }
-        public class IntData
-        {
-            private decimal value = 0;
-            private int sign = 1;
-            private int c_base = 10;
-            public decimal Value
-            {
-                get
-                {
-                    return value * sign;
-                }
-            }
-            public int Sign
-            {
-                get
-                {
-                    return sign;
-                }
-                set
-                {
-                    sign = value;
-                }
-            }
-            public void AddDigit(int a)
-            {
-                value = value * c_base + a;
-            }
-            public void SetBase(int a)
-            {
-                c_base = a;
-            }
-        }
-        public class RealData
-        {
-            private double value = 0;
-            private int sign = 1;
-            private int afterDot = 0;
-            private int expAddedValue = 0;
-            private int expSign = 1;
-            public double Value
-            {
-                get
-                {
-                    if (sign == 1)
-                        return Math.Pow(value, expAddedValue + 1) * sign;
-                    else
-                        return Math.Pow(value, -expAddedValue) * sign;
-                }
-            }
-            public int ExpSign
-            {
-                get
-                {
-                    return expSign;
-                }
-                set
-                {
-                    expSign = value;
-                }
-            }
-            public int Sign
-            {
-                get
-                {
-                    return sign;
-                }
-                set
-                {
-                    sign = value;
-                }
-            }
-            public void AddDigit(int a)
-            {
-                value = value * 10 + a;
-            }
-            public void AddDecimal(int a)
-            {
-                afterDot++;
-                value += Math.Pow(0.1, afterDot) * a;
-            }
-            public void AddExp(int a)
-            {
-                expAddedValue += a;
-            }
-        }
-        public class LiteralData
-        {
-            string value = "";
-            int lastCharValue = -1;
-            public string Value
-            {
-                get
-                {
-                    return value;
-                }
-            }
-            public void AddChar(char ch)
-            {
-                if (lastCharValue != -1)
-                    value += (char)lastCharValue;
-                lastCharValue = -1;
-                value += ch;
-            }
-            public void IncreaceChar(int a)
-            {
-                if (lastCharValue * 10 + a > 127) throw new Exception();
-                if (lastCharValue == -1)
-                    lastCharValue = a;
-                else
-                    lastCharValue = lastCharValue * 10 + a;
-            }
-        }
-        public class IdentifierData
-        {
-            string value = "";
-            public string Value { get { return value; } }
-            public void AddChar(char ch)
-            {
-                value += ch;
-            }
-        }
-        public class ASpecialData
-        {
-            public ASpecial Value { get; set; }
-        }
-        public class DSpecialData
-        {
-            public DSpecial Value { get; set; }
-        }
-        
-       
+        public static string fileText="";
+        public static bool lexerOnly = false;
+        public static bool expressionOnly = false;
+        public static bool syntaxOnly = false;
         public static void SetupWithArgs(string[] args)
         {
             if (args == null || args.Length == 0)
@@ -246,8 +68,9 @@ namespace Compiler
             {
                 foreach (string arg in args)
                 {
-                    if (arg == "-l") lexOnly = true;
-                    if (arg == "-e") expressionOnly = true;
+                    if (arg == "-l") lexerOnly = true;
+                    else if (arg == "-e") expressionOnly = true;
+                    else if (arg == "-s") syntaxOnly = true;
                     else fileText = System.IO.File.ReadAllText(@arg);
                 }
             }
@@ -258,8 +81,8 @@ namespace Compiler
             {
                 Lexer lexer = new Lexer(fileText);
                 Parser parser = new Parser(ref lexer);
-                Parser.Node exp = parser.ParseExpression();
-                if (lexer.Token.Type != "Divider" && (lexer.Token.Value != "EOF" || lexer.Token.Value != "EOL"))
+                Node exp = parser.ParseExpression();
+                if (lexer.Token.Type != Lexer.LexemTypes.Divider && (lexer.Token.Value != (object)Lexem.DSpecial.EOF || lexer.Token.Value != (object)Lexem.DSpecial.EOL))
                     throw new Exception(ErrorConstructor.GetPositionMassage(lexer.Line, lexer.Idx, Error.UnexpectedSymbol));
                 Parser.PrintExpressionTree(exp, "", true);
             }
@@ -272,6 +95,7 @@ namespace Compiler
         {
             SetupWithArgs(args);
             if (expressionOnly) WriteExpression();
+            Console.ReadKey();
         }
     }
 }

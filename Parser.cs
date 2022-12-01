@@ -11,7 +11,7 @@ namespace Compiler
     {
         public static void PrintExpressionTree(Node tree, string indent, bool last)
         {
-            if(indent=="")
+            if (indent=="")
             {
                 Console.WriteLine(indent + " " + tree.getVal());
                 indent += last ? " " : "│ ";
@@ -22,66 +22,17 @@ namespace Compiler
                 indent += last ? "    " : "│   ";
             }
 
-            if (tree is BinOpNode)
+            List<Node> list = tree.GetChildren();
+            foreach(Node node in list)
             {
-                PrintExpressionTree((tree as BinOpNode).left, indent, false);
-                PrintExpressionTree((tree as BinOpNode).right, indent, true);
-            }
-        }
-        public abstract class Node
-        {
-            public abstract string getVal();
-        }
-        public class BinOpNode : Node
-        {
-            public Lexem op;
-            public Node left;
-            public Node right;
-            public override string getVal()
-            {
-                switch (op.Value)
+                if(node.Equals(list.Last()))
                 {
-                    case "Plus":
-                        return "+";
-                    case "Minus":
-                        return "-";
-                    case "Multiply":
-                        return "*";
-                    case "Divide":
-                        return "/";
+                    PrintExpressionTree((tree as BinOpNode).right, indent, true);
                 }
-
-                return op.Value.ToString();
-            }
-            public BinOpNode(Lexem op, Node left, Node right)
-            {
-                this.op = op;
-                this.left = left;
-                this.right = right;
-            }
-        }
-        public class NumberNode : Node
-        {
-            public Lexem lexem;
-            public override string getVal()
-            {
-                return lexem.Value.ToString();
-            }
-            public NumberNode(Lexem lexem)
-            {
-                this.lexem = lexem;
-            }
-        }
-        public class VariableNode : Node
-        {
-            public Lexem lexem;
-            public override string getVal()
-            {
-                return lexem.Value.ToString();
-            }
-            public VariableNode(Lexem lexem)
-            {
-                this.lexem = lexem;
+                else
+                {
+                    PrintExpressionTree((tree as BinOpNode).left, indent, false);
+                }
             }
         }
         Lexer lexer;
@@ -94,7 +45,7 @@ namespace Compiler
         {
             Node left = ParseTerm();
             Lexem lex = lexer.Token;
-            while (lex.Value == "Plus" || lex.Value == "Minus")
+            while (lex.Value.Equals(Lexem.ASpecial.Plus) || lex.Value.Equals(Lexem.ASpecial.Minus))
             {
                 lexer.NextToken();
                 left = new BinOpNode(lex, left, ParseTerm());
@@ -106,7 +57,7 @@ namespace Compiler
         {
             Node left = ParseFactor();
             Lexem lex = lexer.Token;
-            while (lex.Value == "Multiply" || lex.Value == "Divide")
+            while (lex.Value.Equals(Lexem.ASpecial.Multiply) || lex.Value.Equals(Lexem.ASpecial.Divide))
             {
                 lexer.NextToken();
                 left = new BinOpNode(lex, left, ParseFactor());
@@ -117,21 +68,21 @@ namespace Compiler
         public Node ParseFactor()
         {
             Lexem lex = lexer.Token;
-            if (lex.Type == "Integer")
+            if (lex.Type == Lexer.LexemTypes.Integer)
             {
                 lexer.NextToken();
                 return new NumberNode(lex);
             }
-            if (lex.Type == "Identifier")
+            if (lex.Type == Lexer.LexemTypes.Identifier)
             {
                 lexer.NextToken();
                 return new VariableNode(lex);
             }
-            if (lex.Value != null && lex.Value == "Bracket_open" && lex.Type == "Math")
+            if (lex.Value != null && lex.Value.Equals(Lexem.ASpecial.Bracket_open))
             {
                 lexer.NextToken();
                 Node exp = ParseExpression();
-                if (lexer.Token.Value == null || !(lexer.Token.Value == "Bracket_closed" && lexer.Token.Type == "Math"))
+                if (lexer.Token.Value == null || !(lexer.Token.Value.Equals(Lexem.ASpecial.Bracket_closed)))
                     throw new ArgumentException(ErrorConstructor.GetPositionMassage(lexer.Line, lexer.Idx, Error.CBracketE));
                 lexer.NextToken();
                 return exp;
