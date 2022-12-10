@@ -169,7 +169,7 @@ namespace Compiler
         public int Index;
         public Lexer.LexemTypes Type = Lexer.LexemTypes.Null;
         public object Value = null;
-        public string Input;
+        public string Input=null;
         public Lexem(int adress, int line, int index, Lexer.LexemTypes type, object value, string input = null)
         {
             this.Adress = adress;
@@ -177,14 +177,30 @@ namespace Compiler
             this.Index = index;
             this.Type = type;
             this.Value = value;
+            switch (Value)
+            {
+                case Lexem.DSpecial.Space:
+                    return;
+                case Lexem.DSpecial.EOL:
+                    return;
+                case Lexem.DSpecial.EOF:
+                    return;
+            }
+            switch (Type)
+            {
+                case Lexer.LexemTypes.Comment:
+                    return;
+                case Lexer.LexemTypes.Null:
+                    return;
+            }
             this.Input = input;
         }
         public string Write()
         {
             if (Input == null || Input.Length == 0)
-                return Line.ToString() + " " + Input.ToString() + " " + Type.ToString() + " " + Value.ToString();
+                return Line.ToString() + " " + Index.ToString() + " " + Type.ToString() + " " + Value.ToString();
             else
-                return Line.ToString() + " " + Input.ToString() + " " + Type.ToString() + " " + Value.ToString() + " " + Input.ToString();
+                return Line.ToString() + " " + Index.ToString() + " " + Type.ToString() + " " + Value.ToString() + " " + Input.ToString();
         }
     }
 }

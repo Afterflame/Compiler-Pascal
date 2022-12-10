@@ -280,13 +280,18 @@ namespace Compiler
                         currentStates.Add(State.Less);
                         currentStates.Remove(State.Start);
                     }));
+                    lexerFSM[State.Start].Add(Event.Quote, new Action<char>((ch) =>
+                    {
+                        currentStates.Add(State.Literal_start);
+                        currentStates.Remove(State.Char_number);
+                    }));
                     lexerFSM[State.Start].Add(Event.Colon, new Action<char>((ch) =>
                     {
                         currentStates.Add(State.Colon);
                         currentStates.Remove(State.Start);
                     }));
                     lexerFSM[State.Start].Add(Event.Hash, new Action<char>((ch) =>
-                    {
+                    {   
                         currentStates.Add(State.Char_start);
                         currentStates.Remove(State.Start);
                     }));
@@ -838,7 +843,12 @@ namespace Compiler
                     if (validExits.ContainsKey(st))
                     {
                         validExits[st].Invoke();
-                        ans = new Lexem(start, Line, Idx, exitType, exitValue);
+                        string input;
+                        if (fileText.Length > it && it > start)
+                            input = fileText.Substring(start, it - start + 1);
+                        else
+                            input = null;
+                        ans = new Lexem(start, Line, Idx, exitType, exitValue, input);
                     }
                 }
                 if (currentStates.Count > 0 && currentStates.Last() != State.EOF)

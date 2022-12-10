@@ -62,7 +62,7 @@ namespace Compiler
             if (args == null || args.Length == 0)
             {
                 fileText = System.IO.File.ReadAllText(@"input.in");
-                expressionOnly = true;
+                lexerOnly = true;
             }
             else
             {
@@ -82,7 +82,7 @@ namespace Compiler
                 Lexer lexer = new Lexer(fileText);
                 Parser parser = new Parser(ref lexer);
                 Node exp = parser.ParseExpression();
-                if (lexer.Token.Type != Lexer.LexemTypes.Divider && (lexer.Token.Value != (object)Lexem.DSpecial.EOF || lexer.Token.Value != (object)Lexem.DSpecial.EOL))
+                if ((!lexer.Token.Value.Equals(Lexem.DSpecial.EOF) || !lexer.Token.Value.Equals(Lexem.DSpecial.EOL)))
                     throw new Exception(ErrorConstructor.GetPositionMassage(lexer.Line, lexer.Idx, Error.UnexpectedSymbol));
                 Parser.PrintExpressionTree(exp, "", true);
             }
@@ -91,10 +91,30 @@ namespace Compiler
                 Console.WriteLine(ex.Message);
             }
         }
+        public static void WriteLexems()
+        {
+            try
+            {
+                Lexer lexer = new Lexer(fileText);
+                lexer.NextToken();
+                while (!lexer.Token.Value.Equals(Lexem.DSpecial.EOF))
+                {
+                    Console.WriteLine(lexer.Token.Write());
+                    lexer.NextToken();
+                }
+               Console.WriteLine(lexer.Token.Write());
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }
+
         static void Main(string[] args)
         {
             SetupWithArgs(args);
             if (expressionOnly) WriteExpression();
+            if (lexerOnly) WriteLexems();
             Console.ReadKey();
         }
     }
