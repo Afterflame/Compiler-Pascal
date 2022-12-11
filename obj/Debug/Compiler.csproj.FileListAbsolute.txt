@@ -2,7 +2,6 @@ D:\source_code\Compiler\Compiler\bin\Debug\Compiler.exe.config
 D:\source_code\Compiler\Compiler\bin\Debug\Compiler.exe
 D:\source_code\Compiler\Compiler\bin\Debug\Compiler.pdb
 D:\source_code\Compiler\Compiler\obj\Debug\Compiler.csproj.AssemblyReference.cache
-D:\source_code\Compiler\Compiler\obj\Debug\Compiler.csproj.SuggestedBindingRedirects.cache
 D:\source_code\Compiler\Compiler\obj\Debug\Compiler.csproj.CoreCompileInputs.cache
 D:\source_code\Compiler\Compiler\obj\Debug\Compiler.exe
 D:\source_code\Compiler\Compiler\obj\Debug\Compiler.pdb

@@ -11,7 +11,7 @@ namespace Compiler
     {
         public static void PrintExpressionTree(Node tree, string indent, bool last)
         {
-            if (indent=="")
+            if (indent == "")
             {
                 Console.WriteLine(indent + " " + tree.getVal());
                 indent += last ? " " : "│ ";
@@ -23,9 +23,9 @@ namespace Compiler
             }
 
             List<Node> list = tree.GetChildren();
-            foreach(Node node in list)
+            foreach (Node node in list)
             {
-                if(node.Equals(list.Last()))
+                if (node.Equals(list.Last()))
                 {
                     PrintExpressionTree(node, indent, true);
                 }
@@ -40,31 +40,6 @@ namespace Compiler
         {
             this.lexer = lexer;
             this.lexer.NextToken();
-        }
-        public Node ParseExpression()
-        {
-            Node left = ParseTerm();
-            Lexem lex = lexer.Token;
-            while (lex.Value.Equals(Lexem.SpecialSymbol.Plus) || lex.Value.Equals(Lexem.SpecialSymbol.Minus))
-            {
-                lexer.NextToken();
-                left = new BinOpNode(lex, left, ParseTerm());
-                lex = lexer.Token;
-            }
-            return left;
-        }
-        public Node ParseTerm()
-        {
-            Node left = ParseFactor();
-            Lexem lex = lexer.Token;
-            while (lex.Value.Equals(Lexem.SpecialSymbol.Multiply) || lex.Value.Equals(Lexem.SpecialSymbol.Divide) ||
-            lex.Value.Equals(Lexem.KeyWord.DIV) || lex.Value.Equals(Lexem.KeyWord.MOD))
-            {
-                lexer.NextToken();
-                left = new BinOpNode(lex, left, ParseFactor());
-                lex = lexer.Token;
-            }
-            return left;
         }
 
         public Node ParseConst()
@@ -98,7 +73,7 @@ namespace Compiler
             {
                 var lex = lexer.Token;
                 lexer.NextToken();
-                return new ConstNode(new VariableNode(lex), sign);
+                return new ConstNode(new VariableNode(false, lex), sign);
             }
             throw new ArgumentException(ErrorConstructor.GetPositionMassage(lexer.Line, lexer.Idx, Error.XExpexted, "Constatnt"));
         }
@@ -114,7 +89,7 @@ namespace Compiler
             if (!lexer.Token.Type.Equals(Lexem.Types.UInteger))
                 throw new ArgumentException(ErrorConstructor.GetPositionMassage(lexer.Line, lexer.Idx, Error.XExpexted, "Unsigned Int"));
             lexer.NextToken();
-            if (! lex.Value.Equals(Lexem.SpecialSymbol.RParenthese))
+            if (!lex.Value.Equals(Lexem.SpecialSymbol.RParenthese))
                 throw new ArgumentException(ErrorConstructor.GetPositionMassage(lexer.Line, lexer.Idx, Error.XExpexted, ")"));
             lexer.NextToken();
             return new ConstChrNode(lex);
@@ -122,13 +97,13 @@ namespace Compiler
         public Node ParseConstDef()
         {
             var identifier = lexer.Token;
-            if(identifier.Type != Lexem.Types.Identifier)
+            if (identifier.Type != Lexem.Types.Identifier)
                 throw new ArgumentException(ErrorConstructor.GetPositionMassage(lexer.Line, lexer.Idx, Error.XExpexted, "Identifier"));
             lexer.NextToken();
             if (!lexer.Token.Value.Equals(Lexem.SpecialSymbol.Equal))
                 throw new ArgumentException(ErrorConstructor.GetPositionMassage(lexer.Line, lexer.Idx, Error.XExpexted, "="));
             lexer.NextToken();
-            return new ConstDefinitionNode(new VariableNode(identifier), ParseConst());
+            return new ConstDefinitionNode(new VariableNode(false, identifier), ParseConst());
         }
         /*public Node ParseFunctionType()
         {
@@ -140,8 +115,95 @@ namespace Compiler
             lexer.NextToken();
             return new ConstDefinitionNode(new VariableNode(identifier), ParseConst());
         }*/
+        public Node ParseStatement()
+        {
 
-        public Node ParseConstDefPart()
+            if (lexer.Token.Type == Lexem.Types.Identifier || lexer.Token.Value.Equals(Lexem.SpecialSymbol.At))
+                return ParseSimpleStatement();
+            switch (lexer.Token.Value) {
+                case Lexem.KeyWord.BEGIN:
+                    return ParseCompoundStatement();
+                case Lexem.KeyWord.IF:
+                    return ParseConditionalStatement();
+                case Lexem.KeyWord.WITH:
+                    return ParseWithStatement();
+                case Lexem.KeyWord.FOR:
+                    return ParseForStatement();
+                case Lexem.KeyWord.WHILE:
+                    return ParseWhileStatement();
+                case Lexem.KeyWord.REPEAT:
+                    return ParseRepeatStatement();
+                default:
+                    return new EmptyStatementNode();
+            }
+        }
+        public Node ParseCompoundStatement()
+        {
+            return new EmptyStatementNode();
+        }
+        public Node ParseConditionalStatement()
+        {
+            return new EmptyStatementNode();
+        }
+        public Node ParseWithStatement()
+        {
+            return new EmptyStatementNode();
+        }
+        public Node ParseForStatement()
+        {
+            return new EmptyStatementNode();
+        }
+        public Node ParseWhileStatement()
+        {
+            return new EmptyStatementNode();
+        }
+        public Node ParseRepeatStatement()
+        {
+            return new EmptyStatementNode();
+        }
+        public Node ParseSimpleStatement()
+        {
+            if (lexer.Token.Value.Equals(Lexem.SpecialSymbol.At))
+            {
+                return ParseAssignStatement();
+            }
+            if (lexer.Token.Type != Lexem.Types.Identifier)
+                return new EmptyStatementNode();
+            var lex = lexer.Token;
+            lexer.NextToken();
+            if (!lexer.Token.Value.Equals(Lexem.SpecialSymbol.LParenthese))
+                return ParseVariable(lex);
+            lexer.NextToken();
+            List<Node> result = new List<Node>();
+            result.Add(ParseExpression());
+            while (!lexer.Token.Value.Equals(Lexem.SpecialSymbol.RParenthese))
+            {
+                if (lexer.Token.Value.Equals(Lexem.SpecialSymbol.Comma))
+                {
+                    lexer.NextToken();
+                    result.Add(ParseExpression());
+                }
+                else throw new Exception(ErrorConstructor.GetPositionMassage(lexer.Line, lexer.Idx, Error.XExpexted, ")"));
+            }
+            return new FunctionDesignatorNode(new VariableNode(false, lex), new ParameterListNode(result));
+        }
+        public Node ParseAssignStatement(Lexem inputIdentifier = null)
+        {
+            var lex = lexer.Token;
+            if (inputIdentifier != null)
+            {
+                lex = inputIdentifier;
+                goto objecttion;
+            }
+            if (lexer.Token.Type!=Lexem.Types.Identifier)
+                throw new Exception(ErrorConstructor.GetPositionMassage(lexer.Line, lexer.Idx, Error.XExpexted, "Identifier"));
+            lexer.NextToken();
+            objecttion:
+            if (!lexer.Token.Value.Equals(Lexem.SpecialSymbol.Assign))
+                throw new Exception(ErrorConstructor.GetPositionMassage(lexer.Line, lexer.Idx, Error.XExpexted, ":="));
+            return new ProcedureStatementNode(new VariableNode(false, lex));
+        }
+            public Node ParseConstDefPart()
         {
             if (!lexer.Token.Value.Equals(Lexem.KeyWord.CONST))
                 throw new ArgumentException(ErrorConstructor.GetPositionMassage(lexer.Line, lexer.Idx, Error.XExpexted, "CONST"));
@@ -152,9 +214,61 @@ namespace Compiler
             lexer.NextToken();
             return answer;
         }
+        public Node ParseExpression()
+        {
+            Node left = ParseTerm();
+            Lexem lex = lexer.Token;
+            while (lex.Type == Lexem.Types.Additive_Op)
+            {
+                lexer.NextToken();
+                left = new BinOpNode(lex, left, ParseTerm());
+                lex = lexer.Token;
+            }
+            return left;
+        }
+        public Node ParseTerm()
+        {
+            Node left = ParseSignedFactor();
+            Lexem lex = lexer.Token;
+            while (lex.Type == Lexem.Types.Multiplicative_Op)
+            {
+                lexer.NextToken();
+                left = new BinOpNode(lex, left, ParseFactor());
+                lex = lexer.Token;
+            }
+            return left;
+        }
+        public Node ParseSignedFactor()
+        {
+            int sign = 1;
+            if (lexer.Token.Value.Equals(Lexem.SpecialSymbol.Plus)|| lexer.Token.Value.Equals(Lexem.SpecialSymbol.Minus))
+            {
+                if (lexer.Token.Value.Equals(Lexem.SpecialSymbol.Minus))
+                {
+                    sign = -1;
+                }
+                lexer.NextToken();
+            }
+            return new SignedFactorNode(sign, ParseFactor());
+        }
         public Node ParseFactor()
         {
             Lexem lex = lexer.Token;
+            if (lex.Value.Equals(Lexem.KeyWord.NOT))
+            {
+                lexer.NextToken();
+                return new NotFactorNode(ParseFactor());
+            }
+            if (lex.Value.Equals(Lexem.KeyWord.TRUE))
+            {
+                lexer.NextToken();
+                return new BoolNode(true);
+            }
+            if (lex.Value.Equals(Lexem.KeyWord.FALSE))
+            {
+                lexer.NextToken();
+                return new BoolNode(false);
+            }
             if (lex.Type == Lexem.Types.UInteger)
             {
                 lexer.NextToken();
@@ -162,7 +276,7 @@ namespace Compiler
             }
             if (lex.Type == Lexem.Types.Identifier || lex.Value.Equals(Lexem.SpecialSymbol.At))
             {
-                return ParseVariable();
+                return ParseVariableOrFunction();
             }
             if (lex.Value != null && lex.Value.Equals(Lexem.SpecialSymbol.LParenthese))
             {
@@ -175,30 +289,113 @@ namespace Compiler
             }
             throw new Exception(ErrorConstructor.GetPositionMassage(lexer.Line, lexer.Idx, Error.XExpexted, "Factor"));
         }
-        public Node ParseVariable()
+        public Node ParseVariableOrFunction()
         {
+            if (lexer.Token.Value.Equals(Lexem.SpecialSymbol.At))
+            {
+                return ParseVariable();
+            }
+            if (lexer.Token.Type != Lexem.Types.Identifier)
+                throw new Exception(ErrorConstructor.GetPositionMassage(lexer.Line, lexer.Idx, Error.XExpexted, "Variable or Function"));
+            var lex = lexer.Token;
+            lexer.NextToken();
+            if (!lexer.Token.Value.Equals(Lexem.SpecialSymbol.LParenthese))
+                return ParseVariable(lex);
+            lexer.NextToken();
+            List<Node> result = new List<Node>();
+            result.Add(ParseExpression());
+            while (!lexer.Token.Value.Equals(Lexem.SpecialSymbol.RParenthese))
+            {
+                if (lexer.Token.Value.Equals(Lexem.SpecialSymbol.Comma))
+                {
+                    lexer.NextToken();
+                    result.Add(ParseExpression());
+                }
+                else throw new Exception(ErrorConstructor.GetPositionMassage(lexer.Line, lexer.Idx, Error.XExpexted, ")"));
+            }
+            return new FunctionDesignatorNode(new VariableNode(false, lex), new ParameterListNode(result));
+        }
+        public Node ParseProcedureStatement(Lexem inputIdentifier = null)
+        {
+
+            var lex = lexer.Token;
+            if (inputIdentifier != null)
+            {
+                lex = inputIdentifier;
+                goto objecttion;
+            }
+            if (lexer.Token.Type != Lexem.Types.Identifier)
+                throw new Exception(ErrorConstructor.GetPositionMassage(lexer.Line, lexer.Idx, Error.XExpexted, "Identifier"));
+            lexer.NextToken();
+            objecttion:
+            if (!lexer.Token.Value.Equals(Lexem.SpecialSymbol.LParenthese))
+                return new ProcedureStatementNode(new VariableNode(false, lex));
+            lexer.NextToken();
+            List<Node> result = new List<Node>();
+            result.Add(ParseExpression());
+            while (!lexer.Token.Value.Equals(Lexem.SpecialSymbol.RParenthese))
+            {
+                if (lexer.Token.Value.Equals(Lexem.SpecialSymbol.Comma))
+                {
+                    lexer.NextToken();
+                    result.Add(ParseExpression());
+                }
+                else throw new Exception(ErrorConstructor.GetPositionMassage(lexer.Line, lexer.Idx, Error.XExpexted, ")"));
+            }
+            return new ProcedureStatementNode(new VariableNode(false, lex), new ParameterListNode(result));
+        }
+        public Node ParseVariable(Lexem inputIdentifier = null)
+        {
+            Lexem lex;
             bool isRef = false;
+            if (inputIdentifier != null)
+            {
+                lex = inputIdentifier;
+                goto objecttion;
+            }
             if (lexer.Token.Value.Equals(Lexem.SpecialSymbol.At))
             {
                 isRef = true;
                 lexer.NextToken();
             }
+            lex = lexer.Token;
             if (lexer.Token.Type!= Lexem.Types.Identifier)
                 throw new Exception(ErrorConstructor.GetPositionMassage(lexer.Line, lexer.Idx, Error.XExpexted, "Variable"));
-            var lex = lexer.Token;
             lexer.NextToken();
-            if (lexer.Token.Value.Equals(Lexem.SpecialSymbol.LBracket))
+            objecttion:;
+            List<Node> args = new List<Node>();
+            while (lexer.Token.Value.Equals(Lexem.SpecialSymbol.LBracket) || lexer.Token.Value.Equals(Lexem.SpecialSymbol.Dot))
             {
-                List<Node> list = new List<Node>() { ParseExpression() };
-                while (!lexer.Token.Value.Equals(Lexem.SpecialSymbol.RBracket))
+                if (lexer.Token.Value.Equals(Lexem.SpecialSymbol.LBracket))
                 {
-                    if (lexer.Token.Value.Equals(Lexem.SpecialSymbol.Comma)) {
-                        lexer.NextToken();
-                        list.Add(ParseExpression());
+                    List<Node> list = new List<Node>();
+                    lexer.NextToken();
+                    list.Add(ParseExpression());
+                    while (!lexer.Token.Value.Equals(Lexem.SpecialSymbol.RBracket))
+                    {
+                        if (lexer.Token.Value.Equals(Lexem.SpecialSymbol.Comma))
+                        {
+                            lexer.NextToken();
+                            list.Add(ParseExpression());
+                            continue;
+                        }
+                        throw new Exception(ErrorConstructor.GetPositionMassage(lexer.Line, lexer.Idx, Error.InvalidArgs));
                     }
+                    lexer.NextToken();
+                    var transit = new TransitNode(list);
+                    args.Add(transit);
                 }
+                if (lexer.Token.Value.Equals(Lexem.SpecialSymbol.Dot))
+                {
+                    lexer.NextToken();
+                    if (lexer.Token.Type != Lexem.Types.Identifier)
+                        throw new Exception(ErrorConstructor.GetPositionMassage(lexer.Line, lexer.Idx, Error.InvalidArgs));
+                    args.Add(new VariableNode(false, lexer.Token));
+                    lexer.NextToken();
+                }
+
             }
-            return new VariableNode(lex);
+            return new VariableNode(isRef, lex, args);
         }
     }
 }

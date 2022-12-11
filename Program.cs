@@ -14,7 +14,7 @@ namespace Compiler
             UnknownSymbol,
             UnexpectedSymbol,
             InvalidSymbol,
-            InvalidVariable,
+            InvalidArgs,
             XExpexted,
         }
         public static class ErrorConstructor
@@ -33,8 +33,8 @@ namespace Compiler
                     case Error.InvalidSymbol:
                         text = "Invalid symbol";
                         break;
-                    case Error.InvalidVariable:
-                        text = "Invalid variable args";
+                    case Error.InvalidArgs:
+                        text = "Invalid Arguments";
                         break;
                     case Error.UnexpectedSymbol:
                         text = "Unexpected symbol";
@@ -112,7 +112,7 @@ namespace Compiler
             //{
                 Lexer lexer = new Lexer(fileText);
                 Parser parser = new Parser(ref lexer);
-                Node exp = parser.ParseConstDefPart();
+                Node exp = parser.ParseVariableOrFunction();
                 Parser.PrintExpressionTree(exp, "", true);
             /*}
             catch (Exception ex)

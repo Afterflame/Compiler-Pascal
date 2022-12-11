@@ -44,6 +44,7 @@ namespace Compiler
             LBracket,// [
             RBracket,// ]
             At,// @
+            Colon,
             Comma,
             Dot,
             DotDot,
