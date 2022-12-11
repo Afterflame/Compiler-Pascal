@@ -39,10 +39,10 @@ namespace Compiler
             LessEq,// <=
             NotEq,// <>
             Assign,// :=
-            Parenthese_open,// (
-            Parenthese_closed,// )
-            Bracket_open,// [
-            Bracket_closed,// ]
+            LParenthese,// (
+            RParenthese,// )
+            LBracket,// [
+            RBracket,// ]
             Comma,
             Dot,
             DotDot,
@@ -215,6 +215,12 @@ namespace Compiler
                     Type = Types.Multiplicative_Op;
                     break;
                 case KeyWord.MOD:
+                    Type = Types.Multiplicative_Op;
+                    return;
+                case KeyWord.AND:
+                    Type = Types.Multiplicative_Op;
+                    break;
+                case KeyWord.OR:
                     Type = Types.Multiplicative_Op;
                     return;
             }

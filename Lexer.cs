@@ -48,10 +48,10 @@ namespace Compiler
             Equal,// =
             Greater,// >
             Less,// <
-            Parenthese_open, //(
-            Parenthese_closed, //(
-            Bracket_open, //[
-            Bracket_closed, //]
+            LParenthese, //(
+            RParenthese, //(
+            LBracket, //[
+            RBracket, //]
             GreaterEq,// >=
             LessEq,// <=
             NotEq,// <>
@@ -70,12 +70,12 @@ namespace Compiler
             E, // e E
             Underscore,// _
             Quote, // '
-            Parenthese_open,// (
-            Parenthese_closed,// )
-            Curly_open,// {
-            Curly_closed,// }
-            Bracket_open,// [
-            Bracket_closed,// ]
+            LParenthese,// (
+            RParenthese,// )
+            LCurly,// {
+            RCurly,// }
+            LBracket,// [
+            RBracket,// ]
             Plus,// +
             Minus,// -
             Asterisk,// *
@@ -147,10 +147,10 @@ namespace Compiler
                 [State.Asterisk] = new Action(() => { exitValue = specialSymbolData.Value; exitType = Lexem.Types.Multiplicative_Op; }),
                 [State.Slash] = new Action(() => { exitValue = specialSymbolData.Value; exitType = Lexem.Types.Multiplicative_Op; }),
                 [State.Equal] = new Action(() => { exitValue = specialSymbolData.Value; exitType = Lexem.Types.Relational_Op; }),
-                [State.Parenthese_open] = new Action(() => { exitValue = specialSymbolData.Value; exitType = Lexem.Types.Special; }),
-                [State.Parenthese_closed] = new Action(() => { exitValue = specialSymbolData.Value; exitType = Lexem.Types.Special; }),
-                [State.Bracket_open] = new Action(() => { exitValue = specialSymbolData.Value; exitType = Lexem.Types.Special; }),
-                [State.Bracket_closed] = new Action(() => { exitValue = specialSymbolData.Value; exitType = Lexem.Types.Special; }),
+                [State.LParenthese] = new Action(() => { exitValue = specialSymbolData.Value; exitType = Lexem.Types.Special; }),
+                [State.RParenthese] = new Action(() => { exitValue = specialSymbolData.Value; exitType = Lexem.Types.Special; }),
+                [State.LBracket] = new Action(() => { exitValue = specialSymbolData.Value; exitType = Lexem.Types.Special; }),
+                [State.RBracket] = new Action(() => { exitValue = specialSymbolData.Value; exitType = Lexem.Types.Special; }),
                 [State.Greater] = new Action(() => { exitValue = specialSymbolData.Value; exitType = Lexem.Types.Relational_Op; }),
                 [State.Less] = new Action(() => { exitValue = specialSymbolData.Value; exitType = Lexem.Types.Relational_Op; }),
                 [State.GreaterEq] = new Action(() => { exitValue = specialSymbolData.Value; exitType = Lexem.Types.Relational_Op; }),
@@ -202,10 +202,10 @@ namespace Compiler
                     lexerFSM.Add(State.Equal, new Dictionary<Event, Action<char>>());
                     lexerFSM.Add(State.Greater, new Dictionary<Event, Action<char>>());
                     lexerFSM.Add(State.Less, new Dictionary<Event, Action<char>>());
-                    lexerFSM.Add(State.Parenthese_open, new Dictionary<Event, Action<char>>());
-                    lexerFSM.Add(State.Parenthese_closed, new Dictionary<Event, Action<char>>());
-                    lexerFSM.Add(State.Bracket_open, new Dictionary<Event, Action<char>>());
-                    lexerFSM.Add(State.Bracket_closed, new Dictionary<Event, Action<char>>());
+                    lexerFSM.Add(State.LParenthese, new Dictionary<Event, Action<char>>());
+                    lexerFSM.Add(State.RParenthese, new Dictionary<Event, Action<char>>());
+                    lexerFSM.Add(State.LBracket, new Dictionary<Event, Action<char>>());
+                    lexerFSM.Add(State.RBracket, new Dictionary<Event, Action<char>>());
                     lexerFSM.Add(State.GreaterEq, new Dictionary<Event, Action<char>>());
                     lexerFSM.Add(State.LessEq, new Dictionary<Event, Action<char>>());
                     lexerFSM.Add(State.NotEq, new Dictionary<Event, Action<char>>());
@@ -323,29 +323,29 @@ namespace Compiler
                         currentStates.Remove(State.Start);
                         uIntData.SetBase(8);
                     }));
-                    lexerFSM[State.Start].Add(Event.Parenthese_open, new Action<char>((ch) =>
+                    lexerFSM[State.Start].Add(Event.LParenthese, new Action<char>((ch) =>
                     {
-                        currentStates.Add(State.Parenthese_open);
+                        currentStates.Add(State.LParenthese);
                         currentStates.Remove(State.Start);
-                        specialSymbolData.Value = Lexem.SpecialSymbol.Parenthese_open;
+                        specialSymbolData.Value = Lexem.SpecialSymbol.LParenthese;
                     }));
-                    lexerFSM[State.Start].Add(Event.Parenthese_closed, new Action<char>((ch) =>
+                    lexerFSM[State.Start].Add(Event.RParenthese, new Action<char>((ch) =>
                     {
-                        currentStates.Add(State.Parenthese_closed);
+                        currentStates.Add(State.RParenthese);
                         currentStates.Remove(State.Start);
-                        specialSymbolData.Value = Lexem.SpecialSymbol.Parenthese_closed;
+                        specialSymbolData.Value = Lexem.SpecialSymbol.RParenthese;
                     }));
-                    lexerFSM[State.Start].Add(Event.Bracket_open, new Action<char>((ch) =>
+                    lexerFSM[State.Start].Add(Event.LBracket, new Action<char>((ch) =>
                     {
-                        currentStates.Add(State.Bracket_open);
+                        currentStates.Add(State.LBracket);
                         currentStates.Remove(State.Start);
-                        specialSymbolData.Value = Lexem.SpecialSymbol.Bracket_open;
+                        specialSymbolData.Value = Lexem.SpecialSymbol.LBracket;
                     }));
-                    lexerFSM[State.Start].Add(Event.Bracket_closed, new Action<char>((ch) =>
+                    lexerFSM[State.Start].Add(Event.RBracket, new Action<char>((ch) =>
                     {
-                        currentStates.Add(State.Bracket_closed);
+                        currentStates.Add(State.RBracket);
                         currentStates.Remove(State.Start);
-                        specialSymbolData.Value = Lexem.SpecialSymbol.Bracket_closed;
+                        specialSymbolData.Value = Lexem.SpecialSymbol.RBracket;
                     }));
                     lexerFSM[State.Start].Add(Event.Space, new Action<char>((ch) =>
                     {
@@ -578,14 +578,14 @@ namespace Compiler
                         identifierData.AddChar(ch);
                     }));
                 }
-                lexerFSM[State.Parenthese_open].Add(Event.Asterisk, new Action<char>((ch) =>
+                lexerFSM[State.LParenthese].Add(Event.Asterisk, new Action<char>((ch) =>
                 {
                     currentStates.Add(State.Comment_double);
-                    currentStates.Remove(State.Parenthese_open);
+                    currentStates.Remove(State.LParenthese);
                 }));
                 //Comment_curly
                 {
-                    lexerFSM[State.Comment_curly].Add(Event.Curly_closed, new Action<char>((ch) =>
+                    lexerFSM[State.Comment_curly].Add(Event.RCurly, new Action<char>((ch) =>
                     {
                         currentStates.Add(State.Comment_curly_end);
                         currentStates.Remove(State.Comment_curly);
@@ -612,7 +612,7 @@ namespace Compiler
                 }
                 //Comment_double_preend
                 {
-                    lexerFSM[State.Comment_double_preend].Add(Event.Parenthese_closed, new Action<char>((ch) =>
+                    lexerFSM[State.Comment_double_preend].Add(Event.RParenthese, new Action<char>((ch) =>
                     {
                         currentStates.Add(State.Comment_double_end);
                         currentStates.Remove(State.Comment_double_preend);
@@ -673,12 +673,12 @@ namespace Compiler
                 lexerFSM[State.Equal] = new Dictionary<Event, Action<char>>();
                 //GreaterEq
                 lexerFSM[State.GreaterEq] = new Dictionary<Event, Action<char>>();
-                //Parenthese_closed
-                lexerFSM[State.Parenthese_closed] = new Dictionary<Event, Action<char>>();
-                //Bracket_open
-                lexerFSM[State.Bracket_open] = new Dictionary<Event, Action<char>>();
-                //Bracket_closed
-                lexerFSM[State.Bracket_closed] = new Dictionary<Event, Action<char>>();
+                //RParenthese
+                lexerFSM[State.RParenthese] = new Dictionary<Event, Action<char>>();
+                //LBracket
+                lexerFSM[State.LBracket] = new Dictionary<Event, Action<char>>();
+                //RBracket
+                lexerFSM[State.RBracket] = new Dictionary<Event, Action<char>>();
                 //LessEq
                 lexerFSM[State.LessEq] = new Dictionary<Event, Action<char>>();
                 //NotEq
@@ -698,7 +698,7 @@ namespace Compiler
                 {
                     if (e != Event.Asterisk)
                         lexerFSM[State.Comment_double][e] = new Action<char>((ch) => { });
-                    if (e != Event.Curly_closed)
+                    if (e != Event.RCurly)
                         lexerFSM[State.Comment_curly][e] = new Action<char>((ch) => { });
                     if (e != Event.EOL)
                     {
@@ -778,22 +778,22 @@ namespace Compiler
                             e.Add(Event.Dot);
                             break;
                         case '{':
-                            e.Add(Event.Curly_open);
+                            e.Add(Event.LCurly);
                             break;
                         case '}':
-                            e.Add(Event.Curly_closed);
+                            e.Add(Event.RCurly);
                             break;
                         case '[':
-                            e.Add(Event.Bracket_open);
+                            e.Add(Event.LBracket);
                             break;
                         case ']':
-                            e.Add(Event.Bracket_closed);
+                            e.Add(Event.RBracket);
                             break;
                         case '(':
-                            e.Add(Event.Parenthese_open);
+                            e.Add(Event.LParenthese);
                             break;
                         case ')':
-                            e.Add(Event.Parenthese_closed);
+                            e.Add(Event.RParenthese);
                             break;
                         case '+':
                             e.Add(Event.Plus);
