@@ -14,13 +14,11 @@ namespace Compiler
             UnknownSymbol,
             UnexpectedSymbol,
             InvalidSymbol,
-            FactorE,
-            OBracketE,
-            CBracketE,
+            XExpexted,
         }
         public static class ErrorConstructor
         {
-            public static string GetPositionMassage(int line, int idx, Error err)
+            public static string GetPositionMassage(int line, int idx, Error err, string more="")
             {
                 string text;
                 switch (err)
@@ -37,14 +35,8 @@ namespace Compiler
                     case Error.UnexpectedSymbol:
                         text = "Unexpected symbol";
                         break;
-                    case Error.FactorE:
-                        text = "Factor expected";
-                        break;
-                    case Error.OBracketE:
-                        text = "Opening bracket expected";
-                        break;
-                    case Error.CBracketE:
-                        text = "Closing bracket expected";
+                    case Error.XExpexted:
+                        text = String.Format("{0} expected", more);
                         break;
                     default:
                         text = "Unknown error";
@@ -56,13 +48,13 @@ namespace Compiler
         public static string fileText="";
         public static bool lexerOnly = false;
         public static bool expressionOnly = false;
-        public static bool parseOnly = false;
+        public static bool parserOnly = false;
         public static void SetupWithArgs(string[] args)
         {
             if (args == null || args.Length == 0)
             {
                 fileText = System.IO.File.ReadAllText(@"input.in");
-                lexerOnly = true;
+                parserOnly = true;
             }
             else
             {
@@ -70,7 +62,7 @@ namespace Compiler
                 {
                     if (arg == "-l") lexerOnly = true;
                     else if (arg == "-e") expressionOnly = true;
-                    else if (arg == "-p") parseOnly = true;
+                    else if (arg == "-p") parserOnly = true;
                     else fileText = System.IO.File.ReadAllText(@arg);
                 }
             }
@@ -110,11 +102,27 @@ namespace Compiler
             }
         }
 
+        public static void ParseTree()
+        {
+            //try
+            //{
+                Lexer lexer = new Lexer(fileText);
+                Parser parser = new Parser(ref lexer);
+                Node exp = parser.ParseConstDefPart();
+                Parser.PrintExpressionTree(exp, "", true);
+            /*}
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }*/
+        }
+
         static void Main(string[] args)
         {
             SetupWithArgs(args);
             if (expressionOnly) WriteExpression();
             if (lexerOnly) WriteLexems();
+            if (parserOnly) ParseTree();
             Console.ReadKey();
         }
     }
