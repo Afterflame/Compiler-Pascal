@@ -27,6 +27,7 @@ namespace Compiler
             Parenthese_closed,// )
             Bracket_open,// [
             Bracket_closed,// ]
+            Comma,
             Dot,
             DotDot,
             Space,
