@@ -45,7 +45,7 @@ namespace Compiler
         {
             Node left = ParseTerm();
             Lexem lex = lexer.Token;
-            while (lex.Value.Equals(Lexem.ASpecial.Plus) || lex.Value.Equals(Lexem.ASpecial.Minus))
+            while (lex.Value.Equals(Lexem.SpecialSymbol.Plus) || lex.Value.Equals(Lexem.SpecialSymbol.Minus))
             {
                 lexer.NextToken();
                 left = new BinOpNode(lex, left, ParseTerm());
@@ -57,7 +57,7 @@ namespace Compiler
         {
             Node left = ParseFactor();
             Lexem lex = lexer.Token;
-            while (lex.Value.Equals(Lexem.ASpecial.Multiply) || lex.Value.Equals(Lexem.ASpecial.Divide))
+            while (lex.Value.Equals(Lexem.SpecialSymbol.Multiply) || lex.Value.Equals(Lexem.SpecialSymbol.Divide))
             {
                 lexer.NextToken();
                 left = new BinOpNode(lex, left, ParseFactor());
@@ -78,11 +78,11 @@ namespace Compiler
                 lexer.NextToken();
                 return new VariableNode(lex);
             }
-            if (lex.Value != null && lex.Value.Equals(Lexem.ASpecial.Bracket_open))
+            if (lex.Value != null && lex.Value.Equals(Lexem.SpecialSymbol.Bracket_open))
             {
                 lexer.NextToken();
                 Node exp = ParseExpression();
-                if (lexer.Token.Value == null || !(lexer.Token.Value.Equals(Lexem.ASpecial.Bracket_closed)))
+                if (lexer.Token.Value == null || !(lexer.Token.Value.Equals(Lexem.SpecialSymbol.Bracket_closed)))
                     throw new ArgumentException(ErrorConstructor.GetPositionMassage(lexer.Line, lexer.Idx, Error.CBracketE));
                 lexer.NextToken();
                 return exp;

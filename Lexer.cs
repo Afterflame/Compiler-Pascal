@@ -31,6 +31,8 @@ namespace Compiler
             Literal_end,// '
             Identifier_start,// _,a-z
             Identifier_char,// _,a-z,0-9
+            Dot, // .
+            DotDot, // ..
             Comment_curly,// {
             Comment_double,// (*
             Comment_slash,// //
@@ -100,15 +102,13 @@ namespace Compiler
             Literal,
             Identifier,
             Comment,
-            Math,
-            Divider
+            Special,
         }
         Lexem.UIntData uIntData;
         Lexem.URealData uRealData;
         Lexem.LiteralData literalData;
         Lexem.IdentifierData identifierData;
-        Lexem.ASpecialData aSpecialData;
-        Lexem.DSpecialData dSpecialData;
+        Lexem.SpecialSymbolData specialSymbolData;
         public Dictionary<State, Dictionary<Event, Action<char>>> lexerFSM;
         public HashSet<State> currentStates;
         public Dictionary<State, Action> validExits;
@@ -127,8 +127,7 @@ namespace Compiler
             uRealData = new Lexem.URealData();
             literalData = new Lexem.LiteralData();
             identifierData = new Lexem.IdentifierData();
-            aSpecialData = new Lexem.ASpecialData();
-            dSpecialData = new Lexem.DSpecialData();
+            specialSymbolData = new Lexem.SpecialSymbolData();
             this.fileText = s;
             it = 0;
             idx = 1;
@@ -148,26 +147,28 @@ namespace Compiler
                 [State.Comment_curly_end] = new Action(() => { exitValue = "-"; exitType = LexemTypes.Comment; }),
                 [State.Comment_double_end] = new Action(() => { exitValue = "-"; exitType = LexemTypes.Comment; }),
                 [State.Comment_slash_end] = new Action(() => { exitValue = "-"; exitType = LexemTypes.Comment; }),
-                [State.Plus] = new Action(() => { exitValue = aSpecialData.Value; exitType = LexemTypes.Math; }),
-                [State.Minus] = new Action(() => { exitValue = aSpecialData.Value; exitType = LexemTypes.Math; }),
-                [State.Asterisk] = new Action(() => { exitValue = aSpecialData.Value; exitType = LexemTypes.Math; }),
-                [State.Slash] = new Action(() => { exitValue = aSpecialData.Value; exitType = LexemTypes.Math; }),
-                [State.Equal] = new Action(() => { exitValue = aSpecialData.Value; exitType = LexemTypes.Math; }),
-                [State.Parenthese_open] = new Action(() => { exitValue = aSpecialData.Value; exitType = LexemTypes.Math; }),
-                [State.Parenthese_closed] = new Action(() => { exitValue = aSpecialData.Value; exitType = LexemTypes.Math; }),
-                [State.Bracket_open] = new Action(() => { exitValue = aSpecialData.Value; exitType = LexemTypes.Math; }),
-                [State.Bracket_closed] = new Action(() => { exitValue = aSpecialData.Value; exitType = LexemTypes.Math; }),
-                [State.Equal] = new Action(() => { exitValue = aSpecialData.Value; exitType = LexemTypes.Math; }),
-                [State.Greater] = new Action(() => { exitValue = aSpecialData.Value; exitType = LexemTypes.Math; }),
-                [State.Less] = new Action(() => { exitValue = aSpecialData.Value; exitType = LexemTypes.Math; }),
-                [State.GreaterEq] = new Action(() => { exitValue = aSpecialData.Value; exitType = LexemTypes.Math; }),
-                [State.LessEq] = new Action(() => { exitValue = aSpecialData.Value; exitType = LexemTypes.Math; }),
-                [State.NotEq] = new Action(() => { exitValue = aSpecialData.Value; exitType = LexemTypes.Math; }),
-                [State.Becomes] = new Action(() => { exitValue = aSpecialData.Value; exitType = LexemTypes.Math; }),
-                [State.Semicolon] = new Action(() => { exitValue = dSpecialData.Value; exitType = LexemTypes.Divider; }),
-                [State.Space] = new Action(() => { exitValue = dSpecialData.Value; exitType = LexemTypes.Divider; }),
-                [State.EOL] = new Action(() => { exitValue = dSpecialData.Value; exitType = LexemTypes.Divider; }),
-                [State.EOF] = new Action(() => { exitValue = dSpecialData.Value; exitType = LexemTypes.Divider; }),
+                [State.Dot] = new Action(() => { exitValue = specialSymbolData.Value; exitType = LexemTypes.Special; }),
+                [State.DotDot] = new Action(() => { exitValue = specialSymbolData.Value; exitType = LexemTypes.Special; }),
+                [State.Plus] = new Action(() => { exitValue = specialSymbolData.Value; exitType = LexemTypes.Special; }),
+                [State.Minus] = new Action(() => { exitValue = specialSymbolData.Value; exitType = LexemTypes.Special; }),
+                [State.Asterisk] = new Action(() => { exitValue = specialSymbolData.Value; exitType = LexemTypes.Special; }),
+                [State.Slash] = new Action(() => { exitValue = specialSymbolData.Value; exitType = LexemTypes.Special; }),
+                [State.Equal] = new Action(() => { exitValue = specialSymbolData.Value; exitType = LexemTypes.Special; }),
+                [State.Parenthese_open] = new Action(() => { exitValue = specialSymbolData.Value; exitType = LexemTypes.Special; }),
+                [State.Parenthese_closed] = new Action(() => { exitValue = specialSymbolData.Value; exitType = LexemTypes.Special; }),
+                [State.Bracket_open] = new Action(() => { exitValue = specialSymbolData.Value; exitType = LexemTypes.Special; }),
+                [State.Bracket_closed] = new Action(() => { exitValue = specialSymbolData.Value; exitType = LexemTypes.Special; }),
+                [State.Equal] = new Action(() => { exitValue = specialSymbolData.Value; exitType = LexemTypes.Special; }),
+                [State.Greater] = new Action(() => { exitValue = specialSymbolData.Value; exitType = LexemTypes.Special; }),
+                [State.Less] = new Action(() => { exitValue = specialSymbolData.Value; exitType = LexemTypes.Special; }),
+                [State.GreaterEq] = new Action(() => { exitValue = specialSymbolData.Value; exitType = LexemTypes.Special; }),
+                [State.LessEq] = new Action(() => { exitValue = specialSymbolData.Value; exitType = LexemTypes.Special; }),
+                [State.NotEq] = new Action(() => { exitValue = specialSymbolData.Value; exitType = LexemTypes.Special; }),
+                [State.Becomes] = new Action(() => { exitValue = specialSymbolData.Value; exitType = LexemTypes.Special; }),
+                [State.Semicolon] = new Action(() => { exitValue = specialSymbolData.Value; exitType = LexemTypes.Special; }),
+                [State.Space] = new Action(() => { exitValue = specialSymbolData.Value; exitType = LexemTypes.Special; }),
+                [State.EOL] = new Action(() => { exitValue = specialSymbolData.Value; exitType = LexemTypes.Special; }),
+                [State.EOF] = new Action(() => { exitValue = specialSymbolData.Value; exitType = LexemTypes.Special; }),
             };
             lexerFSM = new Dictionary<State, Dictionary<Event, Action<char>>>();
             {
@@ -186,6 +187,8 @@ namespace Compiler
                     lexerFSM.Add(State.Float_e_power, new Dictionary<Event, Action<char>>());
                     lexerFSM.Add(State.Char_start, new Dictionary<Event, Action<char>>());
                     lexerFSM.Add(State.Char_number, new Dictionary<Event, Action<char>>());
+                    lexerFSM.Add(State.Dot, new Dictionary<Event, Action<char>>());
+                    lexerFSM.Add(State.DotDot, new Dictionary<Event, Action<char>>());
                     lexerFSM.Add(State.Literal_start, new Dictionary<Event, Action<char>>());
                     lexerFSM.Add(State.Literal_char, new Dictionary<Event, Action<char>>());
                     lexerFSM.Add(State.Literal_special, new Dictionary<Event, Action<char>>());
@@ -232,13 +235,19 @@ namespace Compiler
                     {
                         currentStates.Add(State.Plus);
                         currentStates.Remove(State.Start);
-                        aSpecialData.Value = Lexem.ASpecial.Plus;
+                        specialSymbolData.Value = Lexem.SpecialSymbol.Plus;
                     }));
                     lexerFSM[State.Start].Add(Event.Minus, new Action<char>((ch) =>
                     {
                         currentStates.Add(State.Minus);
                         currentStates.Remove(State.Start);
-                        aSpecialData.Value = Lexem.ASpecial.Minus;
+                        specialSymbolData.Value = Lexem.SpecialSymbol.Minus;
+                    }));
+                    lexerFSM[State.Start].Add(Event.Dot, new Action<char>((ch) =>
+                    {
+                        currentStates.Add(State.Dot);
+                        currentStates.Remove(State.Start);
+                        specialSymbolData.Value = Lexem.SpecialSymbol.Dot;
                     }));
                     lexerFSM[State.Start].Add(Event.Character, new Action<char>((ch) =>
                     {
@@ -254,31 +263,31 @@ namespace Compiler
                     }));
                     lexerFSM[State.Start].Add(Event.Asterisk, new Action<char>((ch) =>
                     {
-                        aSpecialData.Value = Lexem.ASpecial.Multiply;
+                        specialSymbolData.Value = Lexem.SpecialSymbol.Multiply;
                         currentStates.Add(State.Asterisk);
                         currentStates.Remove(State.Start);
                     }));
                     lexerFSM[State.Start].Add(Event.Slash, new Action<char>((ch) =>
                     {
-                        aSpecialData.Value = Lexem.ASpecial.Divide;
+                        specialSymbolData.Value = Lexem.SpecialSymbol.Divide;
                         currentStates.Add(State.Slash);
                         currentStates.Remove(State.Start);
                     }));
                     lexerFSM[State.Start].Add(Event.Equal, new Action<char>((ch) =>
                     {
-                        aSpecialData.Value = Lexem.ASpecial.Equal;
+                        specialSymbolData.Value = Lexem.SpecialSymbol.Equal;
                         currentStates.Add(State.Equal);
                         currentStates.Remove(State.Start);
                     }));
                     lexerFSM[State.Start].Add(Event.Greater, new Action<char>((ch) =>
                     {
-                        aSpecialData.Value = Lexem.ASpecial.Greater;
+                        specialSymbolData.Value = Lexem.SpecialSymbol.Greater;
                         currentStates.Add(State.Greater);
                         currentStates.Remove(State.Start);
                     }));
                     lexerFSM[State.Start].Add(Event.Less, new Action<char>((ch) =>
                     {
-                        aSpecialData.Value = Lexem.ASpecial.Less;
+                        specialSymbolData.Value = Lexem.SpecialSymbol.Less;
                         currentStates.Add(State.Less);
                         currentStates.Remove(State.Start);
                     }));
@@ -319,47 +328,47 @@ namespace Compiler
                     {
                         currentStates.Add(State.Parenthese_open);
                         currentStates.Remove(State.Start);
-                        aSpecialData.Value = Lexem.ASpecial.Parenthese_open;
+                        specialSymbolData.Value = Lexem.SpecialSymbol.Parenthese_open;
                     }));
                     lexerFSM[State.Start].Add(Event.Parenthese_closed, new Action<char>((ch) =>
                     {
                         currentStates.Add(State.Parenthese_closed);
                         currentStates.Remove(State.Start);
-                        aSpecialData.Value = Lexem.ASpecial.Parenthese_closed;
+                        specialSymbolData.Value = Lexem.SpecialSymbol.Parenthese_closed;
                     }));
                     lexerFSM[State.Start].Add(Event.Bracket_open, new Action<char>((ch) =>
                     {
                         currentStates.Add(State.Bracket_open);
                         currentStates.Remove(State.Start);
-                        aSpecialData.Value = Lexem.ASpecial.Bracket_open;
+                        specialSymbolData.Value = Lexem.SpecialSymbol.Bracket_open;
                     }));
                     lexerFSM[State.Start].Add(Event.Bracket_closed, new Action<char>((ch) =>
                     {
                         currentStates.Add(State.Bracket_closed);
                         currentStates.Remove(State.Start);
-                        aSpecialData.Value = Lexem.ASpecial.Bracket_closed;
+                        specialSymbolData.Value = Lexem.SpecialSymbol.Bracket_closed;
                     }));
                     lexerFSM[State.Start].Add(Event.Space, new Action<char>((ch) =>
                     {
-                        dSpecialData.Value = Lexem.DSpecial.Space;
+                        specialSymbolData.Value = Lexem.SpecialSymbol.Space;
                         currentStates.Add(State.Space);
                         currentStates.Remove(State.Start);
                     }));
                     lexerFSM[State.Start].Add(Event.Semicolon, new Action<char>((ch) =>
                     {
-                        dSpecialData.Value = Lexem.DSpecial.Semicolon;
+                        specialSymbolData.Value = Lexem.SpecialSymbol.Semicolon;
                         currentStates.Add(State.Semicolon);
                         currentStates.Remove(State.Start);
                     }));
                     lexerFSM[State.Start].Add(Event.EOL, new Action<char>((ch) =>
                     {
-                        dSpecialData.Value = Lexem.DSpecial.EOL;
+                        specialSymbolData.Value = Lexem.SpecialSymbol.EOL;
                         currentStates.Add(State.EOL);
                         currentStates.Remove(State.Start);
                     }));
                     lexerFSM[State.Start].Add(Event.EOF, new Action<char>((ch) =>
                     {
-                        dSpecialData.Value = Lexem.DSpecial.EOF;
+                        specialSymbolData.Value = Lexem.SpecialSymbol.EOF;
                         currentStates.Add(State.EOF);
                         currentStates.Remove(State.Start);
                     }));
@@ -487,6 +496,13 @@ namespace Compiler
                         currentStates.Remove(State.Char_number);
                     }));
                 }
+                //Dot
+                lexerFSM[State.Dot].Add(Event.Dot, new Action<char>((ch) =>
+                {
+                    currentStates.Add(State.DotDot);
+                    currentStates.Remove(State.Dot);
+                    specialSymbolData.Value = Lexem.SpecialSymbol.DotDot;
+                }));
                 //Literal_start
                 {
                     lexerFSM[State.Literal_start].Add(Event.Quote, new Action<char>((ch) =>
@@ -609,6 +625,8 @@ namespace Compiler
                 lexerFSM[State.Plus] = new Dictionary<Event, Action<char>>();
                 //Minus
                 lexerFSM[State.Minus] = new Dictionary<Event, Action<char>>();
+                //DotDot
+                lexerFSM[State.DotDot] = new Dictionary<Event, Action<char>>();
                 //Asterisk
                 lexerFSM[State.Asterisk] = new Dictionary<Event, Action<char>>();
                 //Slash
@@ -622,28 +640,28 @@ namespace Compiler
                 {
                     currentStates.Add(State.GreaterEq);
                     currentStates.Remove(State.Greater);
-                    aSpecialData.Value = Lexem.ASpecial.GreaterEq;
+                    specialSymbolData.Value = Lexem.SpecialSymbol.GreaterEq;
                 }));
                 //Less
                 lexerFSM[State.Less].Add(Event.Equal, new Action<char>((ch) =>
                 {
                     currentStates.Add(State.LessEq);
                     currentStates.Remove(State.Less);
-                    aSpecialData.Value = Lexem.ASpecial.LessEq;
+                    specialSymbolData.Value = Lexem.SpecialSymbol.LessEq;
                 }));
                 //Less
                 lexerFSM[State.Less].Add(Event.Greater, new Action<char>((ch) =>
                 {
                     currentStates.Add(State.NotEq);
                     currentStates.Remove(State.Less);
-                    aSpecialData.Value = Lexem.ASpecial.NotEq;
+                    specialSymbolData.Value = Lexem.SpecialSymbol.NotEq;
                 }));
                 //Colon
                 lexerFSM[State.Colon].Add(Event.Equal, new Action<char>((ch) =>
                 {
                     currentStates.Add(State.Becomes);
                     currentStates.Remove(State.Colon);
-                    aSpecialData.Value = Lexem.ASpecial.Becomes;
+                    specialSymbolData.Value = Lexem.SpecialSymbol.Assign;
                 }));
                 //Equal
                 lexerFSM[State.Equal] = new Dictionary<Event, Action<char>>();
@@ -817,7 +835,7 @@ namespace Compiler
         public Lexem NextToken()
         {
             Token = GetNextToken();
-            while (Token.Type == LexemTypes.Comment || Token.Value.Equals(Lexem.DSpecial.Space))
+            while (Token.Type == LexemTypes.Comment || Token.Value.Equals(Lexem.SpecialSymbol.Space))
                 Token = GetNextToken();
             return Token;
         }
@@ -827,8 +845,8 @@ namespace Compiler
             uRealData = new Lexem.URealData();
             literalData = new Lexem.LiteralData();
             identifierData = new Lexem.IdentifierData();
-            aSpecialData = new Lexem.ASpecialData();
-            dSpecialData = new Lexem.DSpecialData();
+            specialSymbolData = new Lexem.SpecialSymbolData();
+            specialSymbolData = new Lexem.SpecialSymbolData();
             int start = it;
             Idx = idx;
             Line = line;

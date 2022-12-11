@@ -25,13 +25,13 @@ namespace Compiler
         {
             switch (op.Value)
             {
-                case Lexem.ASpecial.Plus:
+                case Lexem.SpecialSymbol.Plus:
                     return "+";
-                case Lexem.ASpecial.Minus:
+                case Lexem.SpecialSymbol.Minus:
                     return "-";
-                case Lexem.ASpecial.Multiply:
+                case Lexem.SpecialSymbol.Multiply:
                     return "*";
-                case Lexem.ASpecial.Divide:
+                case Lexem.SpecialSymbol.Divide:
                     return "/";
             }
 

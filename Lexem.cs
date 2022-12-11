@@ -10,7 +10,7 @@ namespace Compiler
     internal class Lexem
     {
 
-        public enum ASpecial
+        public enum SpecialSymbol
         {
             Plus,// +
             Minus,// -
@@ -22,14 +22,13 @@ namespace Compiler
             GreaterEq,// >=
             LessEq,// <=
             NotEq,// <>
-            Becomes,// :=
+            Assign,// :=
             Parenthese_open,// (
             Parenthese_closed,// )
             Bracket_open,// [
             Bracket_closed,// ]
-        }
-        public enum DSpecial
-        {
+            Dot,
+            DotDot,
             Space,
             Semicolon,
             EOL,
@@ -129,13 +128,9 @@ namespace Compiler
                 value += ch;
             }
         }
-        public class ASpecialData
+        public class SpecialSymbolData
         {
-            public ASpecial Value { get; set; }
-        }
-        public class DSpecialData
-        {
-            public DSpecial Value { get; set; }
+            public SpecialSymbol Value { get; set; }
         }
 
 
@@ -154,11 +149,11 @@ namespace Compiler
             this.Value = value;
             switch (Value)
             {
-                case Lexem.DSpecial.Space:
+                case Lexem.SpecialSymbol.Space:
                     return;
-                case Lexem.DSpecial.EOL:
+                case Lexem.SpecialSymbol.EOL:
                     return;
-                case Lexem.DSpecial.EOF:
+                case Lexem.SpecialSymbol.EOF:
                     return;
             }
             switch (Type)
