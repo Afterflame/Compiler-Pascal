@@ -56,7 +56,7 @@ namespace Compiler
             LessEq,// <=
             NotEq,// <>
             Colon,// :
-            Becomes,// :=
+            Assign,// :=
             Semicolon,// ;
             Space,// ' '
             EOL,// \n
@@ -96,17 +96,6 @@ namespace Compiler
             EOL,// \n
             EOF,// i = length
         }
-        public enum LexemTypes
-        {
-            Null,
-            Integer,
-            Real,
-            Literal,
-            Identifier,
-            Comment,
-            KeyWord,
-            Special,
-        }
         Lexem.UIntData uIntData;
         Lexem.URealData uRealData;
         Lexem.LiteralData literalData;
@@ -119,7 +108,7 @@ namespace Compiler
         public int Line;
         string fileText;
         object exitValue;
-        LexemTypes exitType;
+        Lexem.Types exitType;
         int it;
         int idx;
         int line;
@@ -138,41 +127,40 @@ namespace Compiler
             currentStates = new HashSet<State>();
             validExits = new Dictionary<State, Action>()
             {
-                [State.Number_char] = new Action(() => { exitValue = uIntData.Value; exitType = LexemTypes.Integer; }),
-                [State.Int_char] = new Action(() => { exitValue = uIntData.Value; exitType = LexemTypes.Integer; }),
-                [State.HexInt_char] = new Action(() => { exitValue = uIntData.Value; exitType = LexemTypes.Integer; }),
-                [State.Float_char] = new Action(() => { exitValue = uRealData.Value; exitType = LexemTypes.Real; }),
-                [State.Float_e_power] = new Action(() => { exitValue = uRealData.Value; exitType = LexemTypes.Real; }),
-                [State.Char_number] = new Action(() => { exitValue = literalData; exitType = LexemTypes.Literal; }),
-                [State.Literal_end] = new Action(() => { exitValue = literalData.Value; exitType = LexemTypes.Literal; }),
-                [State.Identifier_start] = new Action(() => { exitValue = identifierData.Value; exitType = LexemTypes.Identifier; }),
-                [State.Identifier_char] = new Action(() => { exitValue = identifierData.Value; exitType = LexemTypes.Identifier; }),
-                [State.Comment_curly_end] = new Action(() => { exitValue = "-"; exitType = LexemTypes.Comment; }),
-                [State.Comment_double_end] = new Action(() => { exitValue = "-"; exitType = LexemTypes.Comment; }),
-                [State.Comment_slash_end] = new Action(() => { exitValue = "-"; exitType = LexemTypes.Comment; }),
-                [State.Comma] = new Action(() => { exitValue = specialSymbolData.Value; exitType = LexemTypes.Special; }),
-                [State.Dot] = new Action(() => { exitValue = specialSymbolData.Value; exitType = LexemTypes.Special; }),
-                [State.DotDot] = new Action(() => { exitValue = specialSymbolData.Value; exitType = LexemTypes.Special; }),
-                [State.Plus] = new Action(() => { exitValue = specialSymbolData.Value; exitType = LexemTypes.Special; }),
-                [State.Minus] = new Action(() => { exitValue = specialSymbolData.Value; exitType = LexemTypes.Special; }),
-                [State.Asterisk] = new Action(() => { exitValue = specialSymbolData.Value; exitType = LexemTypes.Special; }),
-                [State.Slash] = new Action(() => { exitValue = specialSymbolData.Value; exitType = LexemTypes.Special; }),
-                [State.Equal] = new Action(() => { exitValue = specialSymbolData.Value; exitType = LexemTypes.Special; }),
-                [State.Parenthese_open] = new Action(() => { exitValue = specialSymbolData.Value; exitType = LexemTypes.Special; }),
-                [State.Parenthese_closed] = new Action(() => { exitValue = specialSymbolData.Value; exitType = LexemTypes.Special; }),
-                [State.Bracket_open] = new Action(() => { exitValue = specialSymbolData.Value; exitType = LexemTypes.Special; }),
-                [State.Bracket_closed] = new Action(() => { exitValue = specialSymbolData.Value; exitType = LexemTypes.Special; }),
-                [State.Equal] = new Action(() => { exitValue = specialSymbolData.Value; exitType = LexemTypes.Special; }),
-                [State.Greater] = new Action(() => { exitValue = specialSymbolData.Value; exitType = LexemTypes.Special; }),
-                [State.Less] = new Action(() => { exitValue = specialSymbolData.Value; exitType = LexemTypes.Special; }),
-                [State.GreaterEq] = new Action(() => { exitValue = specialSymbolData.Value; exitType = LexemTypes.Special; }),
-                [State.LessEq] = new Action(() => { exitValue = specialSymbolData.Value; exitType = LexemTypes.Special; }),
-                [State.NotEq] = new Action(() => { exitValue = specialSymbolData.Value; exitType = LexemTypes.Special; }),
-                [State.Becomes] = new Action(() => { exitValue = specialSymbolData.Value; exitType = LexemTypes.Special; }),
-                [State.Semicolon] = new Action(() => { exitValue = specialSymbolData.Value; exitType = LexemTypes.Special; }),
-                [State.Space] = new Action(() => { exitValue = specialSymbolData.Value; exitType = LexemTypes.Special; }),
-                [State.EOL] = new Action(() => { exitValue = specialSymbolData.Value; exitType = LexemTypes.Special; }),
-                [State.EOF] = new Action(() => { exitValue = specialSymbolData.Value; exitType = LexemTypes.Special; }),
+                [State.Number_char] = new Action(() => { exitValue = uIntData.Value; exitType = Lexem.Types.UInteger; }),
+                [State.Int_char] = new Action(() => { exitValue = uIntData.Value; exitType = Lexem.Types.UInteger; }),
+                [State.HexInt_char] = new Action(() => { exitValue = uIntData.Value; exitType = Lexem.Types.UInteger; }),
+                [State.Float_char] = new Action(() => { exitValue = uRealData.Value; exitType = Lexem.Types.UReal; }),
+                [State.Float_e_power] = new Action(() => { exitValue = uRealData.Value; exitType = Lexem.Types.UReal; }),
+                [State.Char_number] = new Action(() => { exitValue = literalData; exitType = Lexem.Types.Literal; }),
+                [State.Literal_end] = new Action(() => { exitValue = literalData.Value; exitType = Lexem.Types.Literal; }),
+                [State.Identifier_start] = new Action(() => { exitValue = identifierData.Value; exitType = Lexem.Types.Identifier; }),
+                [State.Identifier_char] = new Action(() => { exitValue = identifierData.Value; exitType = Lexem.Types.Identifier; }),
+                [State.Comment_curly_end] = new Action(() => { exitValue = "-"; exitType = Lexem.Types.Comment; }),
+                [State.Comment_double_end] = new Action(() => { exitValue = "-"; exitType = Lexem.Types.Comment; }),
+                [State.Comment_slash_end] = new Action(() => { exitValue = "-"; exitType = Lexem.Types.Comment; }),
+                [State.Comma] = new Action(() => { exitValue = specialSymbolData.Value; exitType = Lexem.Types.Special; }),
+                [State.Dot] = new Action(() => { exitValue = specialSymbolData.Value; exitType = Lexem.Types.Special; }),
+                [State.DotDot] = new Action(() => { exitValue = specialSymbolData.Value; exitType = Lexem.Types.Special; }),
+                [State.Plus] = new Action(() => { exitValue = specialSymbolData.Value; exitType = Lexem.Types.Additive_Op; }),
+                [State.Minus] = new Action(() => { exitValue = specialSymbolData.Value; exitType = Lexem.Types.Additive_Op; }),
+                [State.Asterisk] = new Action(() => { exitValue = specialSymbolData.Value; exitType = Lexem.Types.Multiplicative_Op; }),
+                [State.Slash] = new Action(() => { exitValue = specialSymbolData.Value; exitType = Lexem.Types.Multiplicative_Op; }),
+                [State.Equal] = new Action(() => { exitValue = specialSymbolData.Value; exitType = Lexem.Types.Relational_Op; }),
+                [State.Parenthese_open] = new Action(() => { exitValue = specialSymbolData.Value; exitType = Lexem.Types.Special; }),
+                [State.Parenthese_closed] = new Action(() => { exitValue = specialSymbolData.Value; exitType = Lexem.Types.Special; }),
+                [State.Bracket_open] = new Action(() => { exitValue = specialSymbolData.Value; exitType = Lexem.Types.Special; }),
+                [State.Bracket_closed] = new Action(() => { exitValue = specialSymbolData.Value; exitType = Lexem.Types.Special; }),
+                [State.Greater] = new Action(() => { exitValue = specialSymbolData.Value; exitType = Lexem.Types.Relational_Op; }),
+                [State.Less] = new Action(() => { exitValue = specialSymbolData.Value; exitType = Lexem.Types.Relational_Op; }),
+                [State.GreaterEq] = new Action(() => { exitValue = specialSymbolData.Value; exitType = Lexem.Types.Relational_Op; }),
+                [State.LessEq] = new Action(() => { exitValue = specialSymbolData.Value; exitType = Lexem.Types.Relational_Op; }),
+                [State.NotEq] = new Action(() => { exitValue = specialSymbolData.Value; exitType = Lexem.Types.Relational_Op; }),
+                [State.Assign] = new Action(() => { exitValue = specialSymbolData.Value; exitType = Lexem.Types.Special; }),
+                [State.Semicolon] = new Action(() => { exitValue = specialSymbolData.Value; exitType = Lexem.Types.Special; }),
+                [State.Space] = new Action(() => { exitValue = specialSymbolData.Value; exitType = Lexem.Types.Special; }),
+                [State.EOL] = new Action(() => { exitValue = specialSymbolData.Value; exitType = Lexem.Types.Special; }),
+                [State.EOF] = new Action(() => { exitValue = specialSymbolData.Value; exitType = Lexem.Types.Special; }),
             };
             lexerFSM = new Dictionary<State, Dictionary<Event, Action<char>>>();
             {
@@ -222,7 +210,7 @@ namespace Compiler
                     lexerFSM.Add(State.LessEq, new Dictionary<Event, Action<char>>());
                     lexerFSM.Add(State.NotEq, new Dictionary<Event, Action<char>>());
                     lexerFSM.Add(State.Colon, new Dictionary<Event, Action<char>>());
-                    lexerFSM.Add(State.Becomes, new Dictionary<Event, Action<char>>());
+                    lexerFSM.Add(State.Assign, new Dictionary<Event, Action<char>>());
                     lexerFSM.Add(State.Space, new Dictionary<Event, Action<char>>());
                     lexerFSM.Add(State.EOL, new Dictionary<Event, Action<char>>());
                     lexerFSM.Add(State.EOF, new Dictionary<Event, Action<char>>());
@@ -677,7 +665,7 @@ namespace Compiler
                 //Colon
                 lexerFSM[State.Colon].Add(Event.Equal, new Action<char>((ch) =>
                 {
-                    currentStates.Add(State.Becomes);
+                    currentStates.Add(State.Assign);
                     currentStates.Remove(State.Colon);
                     specialSymbolData.Value = Lexem.SpecialSymbol.Assign;
                 }));
@@ -695,8 +683,8 @@ namespace Compiler
                 lexerFSM[State.LessEq] = new Dictionary<Event, Action<char>>();
                 //NotEq
                 lexerFSM[State.NotEq] = new Dictionary<Event, Action<char>>();
-                //Becomes
-                lexerFSM[State.Becomes] = new Dictionary<Event, Action<char>>();
+                //Assign
+                lexerFSM[State.Assign] = new Dictionary<Event, Action<char>>();
                 //Semicolon
                 lexerFSM[State.Semicolon] = new Dictionary<Event, Action<char>>();
                 //Space
@@ -856,7 +844,7 @@ namespace Compiler
         public Lexem NextToken()
         {
             Token = GetNextToken();
-            while (Token.Type == LexemTypes.Comment || Token.Value.Equals(Lexem.SpecialSymbol.Space))
+            while (Token.Type == Lexem.Types.Comment || Token.Value.Equals(Lexem.SpecialSymbol.Space))
                 Token = GetNextToken();
             return Token;
         }
@@ -917,9 +905,9 @@ namespace Compiler
                             input = fileText.Substring(start, it - start + 1);
                         else
                             input = null;
-                        if(exitType==LexemTypes.Identifier && Enum.IsDefined(typeof(Lexem.KeyWord), exitValue.ToString().ToUpper()))
+                        if(exitType==Lexem.Types.Identifier && Enum.IsDefined(typeof(Lexem.KeyWord), exitValue.ToString().ToUpper()))
                         {
-                            exitType=LexemTypes.KeyWord;
+                            exitType=Lexem.Types.KeyWord;
                             exitValue = (Lexem.KeyWord)Enum.Parse(typeof(Lexem.KeyWord), exitValue.ToString().ToUpper());
                         }
                         ans = new Lexem(start, Line, Idx, exitType, exitValue, input);

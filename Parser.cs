@@ -57,7 +57,8 @@ namespace Compiler
         {
             Node left = ParseFactor();
             Lexem lex = lexer.Token;
-            while (lex.Value.Equals(Lexem.SpecialSymbol.Multiply) || lex.Value.Equals(Lexem.SpecialSymbol.Divide))
+            while (lex.Value.Equals(Lexem.SpecialSymbol.Multiply) || lex.Value.Equals(Lexem.SpecialSymbol.Divide) ||
+            lex.Value.Equals(Lexem.KeyWord.DIV) || lex.Value.Equals(Lexem.KeyWord.MOD))
             {
                 lexer.NextToken();
                 left = new BinOpNode(lex, left, ParseFactor());
@@ -68,12 +69,12 @@ namespace Compiler
         public Node ParseFactor()
         {
             Lexem lex = lexer.Token;
-            if (lex.Type == Lexer.LexemTypes.Integer)
+            if (lex.Type == Lexem.Types.UInteger)
             {
                 lexer.NextToken();
                 return new NumberNode(lex);
             }
-            if (lex.Type == Lexer.LexemTypes.Identifier)
+            if (lex.Type == Lexem.Types.Identifier)
             {
                 lexer.NextToken();
                 return new VariableNode(lex);

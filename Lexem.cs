@@ -9,7 +9,23 @@ namespace Compiler
 
     internal class Lexem
     {
-
+        public enum Types
+        {
+            Null,
+            UInteger,
+            UReal,
+            Literal,
+            Identifier,
+            Comment,
+            KeyWord,
+            Divider,
+            Additive_Op,
+            Multiplicative_Op,
+            Relational_Op,
+            Bool_,
+            Sign,
+            Special,
+        }
         public enum SpecialSymbol
         {
             Plus,// +
@@ -177,10 +193,10 @@ namespace Compiler
         public int Adress;
         public int Line;
         public int Index;
-        public Lexer.LexemTypes Type = Lexer.LexemTypes.Null;
+        public Types Type = Types.Null;
         public object Value = null;
         public string Input=null;
-        public Lexem(int adress, int line, int index, Lexer.LexemTypes type, object value, string input = null)
+        public Lexem(int adress, int line, int index, Types type, object value, string input = null)
         {
             this.Adress = adress;
             this.Line = line;
@@ -189,18 +205,24 @@ namespace Compiler
             this.Value = value;
             switch (Value)
             {
-                case Lexem.SpecialSymbol.Space:
+                case SpecialSymbol.Space:
                     return;
-                case Lexem.SpecialSymbol.EOL:
+                case SpecialSymbol.EOL:
                     return;
-                case Lexem.SpecialSymbol.EOF:
+                case SpecialSymbol.EOF:
+                    return;
+                case KeyWord.DIV:
+                    Type = Types.Multiplicative_Op;
+                    break;
+                case KeyWord.MOD:
+                    Type = Types.Multiplicative_Op;
                     return;
             }
             switch (Type)
             {
-                case Lexer.LexemTypes.Comment:
+                case Types.Comment:
                     return;
-                case Lexer.LexemTypes.Null:
+                case Types.Null:
                     return;
             }
             this.Input = input;
