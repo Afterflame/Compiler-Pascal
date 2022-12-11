@@ -198,11 +198,11 @@ namespace Compiler
         public string Input=null;
         public Lexem(int adress, int line, int index, Types type, object value, string input = null)
         {
-            this.Adress = adress;
-            this.Line = line;
-            this.Index = index;
-            this.Type = type;
-            this.Value = value;
+            Adress = adress;
+            Line = line;
+            Index = index;
+            Type = type;
+            Value = value;
             switch (Value)
             {
                 case SpecialSymbol.Space:
