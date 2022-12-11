@@ -56,7 +56,7 @@ namespace Compiler
         public static string fileText="";
         public static bool lexerOnly = false;
         public static bool expressionOnly = false;
-        public static bool syntaxOnly = false;
+        public static bool parseOnly = false;
         public static void SetupWithArgs(string[] args)
         {
             if (args == null || args.Length == 0)
@@ -70,7 +70,7 @@ namespace Compiler
                 {
                     if (arg == "-l") lexerOnly = true;
                     else if (arg == "-e") expressionOnly = true;
-                    else if (arg == "-s") syntaxOnly = true;
+                    else if (arg == "-p") parseOnly = true;
                     else fileText = System.IO.File.ReadAllText(@arg);
                 }
             }

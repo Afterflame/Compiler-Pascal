@@ -23,8 +23,10 @@ namespace Compiler
             LessEq,// <=
             NotEq,// <>
             Becomes,// :=
-            Bracket_open,// :=
-            Bracket_closed,// :=
+            Parenthese_open,// (
+            Parenthese_closed,// )
+            Bracket_open,// [
+            Bracket_closed,// ]
         }
         public enum DSpecial
         {
@@ -33,27 +35,15 @@ namespace Compiler
             EOL,
             EOF,
         }
-        public class IntData
+        public class UIntData
         {
             private decimal value = 0;
-            private int sign = 1;
             private int c_base = 10;
             public decimal Value
             {
                 get
                 {
-                    return value * sign;
-                }
-            }
-            public int Sign
-            {
-                get
-                {
-                    return sign;
-                }
-                set
-                {
-                    sign = value;
+                    return value;
                 }
             }
             public void AddDigit(int a)
@@ -65,21 +55,17 @@ namespace Compiler
                 c_base = a;
             }
         }
-        public class RealData
+        public class URealData
         {
             private double value = 0;
-            private int sign = 1;
             private int afterDot = 0;
-            private int expAddedValue = 0;
+            private int expValue = 0;
             private int expSign = 1;
             public double Value
             {
                 get
                 {
-                    if (sign == 1)
-                        return Math.Pow(value, expAddedValue + 1) * sign;
-                    else
-                        return Math.Pow(value, -expAddedValue) * sign;
+                    return value*Math.Pow(10, expSign*expValue);
                 }
             }
             public int ExpSign
@@ -93,17 +79,6 @@ namespace Compiler
                     expSign = value;
                 }
             }
-            public int Sign
-            {
-                get
-                {
-                    return sign;
-                }
-                set
-                {
-                    sign = value;
-                }
-            }
             public void AddDigit(int a)
             {
                 value = value * 10 + a;
@@ -115,7 +90,7 @@ namespace Compiler
             }
             public void AddExp(int a)
             {
-                expAddedValue += a;
+                expValue = expValue*10+a;
             }
         }
         public class LiteralData
