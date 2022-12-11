@@ -102,6 +102,7 @@ namespace Compiler
             Literal,
             Identifier,
             Comment,
+            KeyWord,
             Special,
         }
         Lexem.UIntData uIntData;
@@ -383,6 +384,11 @@ namespace Compiler
                     lexerFSM[State.Number_char].Add(Event.Dot, new Action<char>((ch) =>
                     {
                         currentStates.Add(State.Float_dot);
+                        currentStates.Remove(State.Number_char);
+                    }));
+                    lexerFSM[State.Number_char].Add(Event.E, new Action<char>((ch) =>
+                    {
+                        currentStates.Add(State.Float_e);
                         currentStates.Remove(State.Number_char);
                     }));
                 }
@@ -896,6 +902,11 @@ namespace Compiler
                             input = fileText.Substring(start, it - start + 1);
                         else
                             input = null;
+                        if(exitType==LexemTypes.Identifier && Enum.IsDefined(typeof(Lexem.KeyWord), exitValue.ToString().ToUpper()))
+                        {
+                            exitType=LexemTypes.KeyWord;
+                            exitValue = (Lexem.KeyWord)Enum.Parse(typeof(Lexem.KeyWord), exitValue.ToString().ToUpper());
+                        }
                         ans = new Lexem(start, Line, Idx, exitType, exitValue, input);
                     }
                 }
