@@ -130,6 +130,17 @@ namespace Compiler
             lexer.NextToken();
             return new ConstDefinitionNode(new VariableNode(identifier), ParseConst());
         }
+        /*public Node ParseFunctionType()
+        {
+            if (!lexer.Token.Value.Equals(Lexem.KeyWord.FUNCTION))
+                throw new ArgumentException(ErrorConstructor.GetPositionMassage(lexer.Line, lexer.Idx, Error.XExpexted, "FUNCTION"));
+            lexer.NextToken();
+            if (!lexer.Token.Value.Equals(Lexem.SpecialSymbol.Equal))
+                throw new ArgumentException(ErrorConstructor.GetPositionMassage(lexer.Line, lexer.Idx, Error.XExpexted, "="));
+            lexer.NextToken();
+            return new ConstDefinitionNode(new VariableNode(identifier), ParseConst());
+        }*/
+
         public Node ParseConstDefPart()
         {
             if (!lexer.Token.Value.Equals(Lexem.KeyWord.CONST))
@@ -149,10 +160,9 @@ namespace Compiler
                 lexer.NextToken();
                 return new NumberNode(lex);
             }
-            if (lex.Type == Lexem.Types.Identifier)
+            if (lex.Type == Lexem.Types.Identifier || lex.Value.Equals(Lexem.SpecialSymbol.At))
             {
-                lexer.NextToken();
-                return new VariableNode(lex);
+                return ParseVariable();
             }
             if (lex.Value != null && lex.Value.Equals(Lexem.SpecialSymbol.LParenthese))
             {
@@ -164,6 +174,31 @@ namespace Compiler
                 return exp;
             }
             throw new Exception(ErrorConstructor.GetPositionMassage(lexer.Line, lexer.Idx, Error.XExpexted, "Factor"));
+        }
+        public Node ParseVariable()
+        {
+            bool isRef = false;
+            if (lexer.Token.Value.Equals(Lexem.SpecialSymbol.At))
+            {
+                isRef = true;
+                lexer.NextToken();
+            }
+            if (lexer.Token.Type!= Lexem.Types.Identifier)
+                throw new Exception(ErrorConstructor.GetPositionMassage(lexer.Line, lexer.Idx, Error.XExpexted, "Variable"));
+            var lex = lexer.Token;
+            lexer.NextToken();
+            if (lexer.Token.Value.Equals(Lexem.SpecialSymbol.LBracket))
+            {
+                List<Node> list = new List<Node>() { ParseExpression() };
+                while (!lexer.Token.Value.Equals(Lexem.SpecialSymbol.RBracket))
+                {
+                    if (lexer.Token.Value.Equals(Lexem.SpecialSymbol.Comma)) {
+                        lexer.NextToken();
+                        list.Add(ParseExpression());
+                    }
+                }
+            }
+            return new VariableNode(lex);
         }
     }
 }

@@ -14,6 +14,7 @@ namespace Compiler
             UnknownSymbol,
             UnexpectedSymbol,
             InvalidSymbol,
+            InvalidVariable,
             XExpexted,
         }
         public static class ErrorConstructor
@@ -31,6 +32,9 @@ namespace Compiler
                         break;
                     case Error.InvalidSymbol:
                         text = "Invalid symbol";
+                        break;
+                    case Error.InvalidVariable:
+                        text = "Invalid variable args";
                         break;
                     case Error.UnexpectedSymbol:
                         text = "Unexpected symbol";

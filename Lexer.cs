@@ -32,6 +32,7 @@ namespace Compiler
             Identifier_start,// _,a-z
             Identifier_char,// _,a-z,0-9
             Comma, //,
+            At, //,
             Dot, // .
             DotDot, // ..
             Comment_curly,// {
@@ -85,6 +86,7 @@ namespace Compiler
             Less,// <
             Colon,// :
             Comma, //,
+            At, //@
             Dot,// .
             Hash,// #
             Dollar,// $
@@ -140,6 +142,7 @@ namespace Compiler
                 [State.Comment_double_end] = new Action(() => { exitValue = "-"; exitType = Lexem.Types.Comment; }),
                 [State.Comment_slash_end] = new Action(() => { exitValue = "-"; exitType = Lexem.Types.Comment; }),
                 [State.Comma] = new Action(() => { exitValue = specialSymbolData.Value; exitType = Lexem.Types.Special; }),
+                [State.At] = new Action(() => { exitValue = specialSymbolData.Value; exitType = Lexem.Types.Special; }),
                 [State.Dot] = new Action(() => { exitValue = specialSymbolData.Value; exitType = Lexem.Types.Special; }),
                 [State.DotDot] = new Action(() => { exitValue = specialSymbolData.Value; exitType = Lexem.Types.Special; }),
                 [State.Plus] = new Action(() => { exitValue = specialSymbolData.Value; exitType = Lexem.Types.Additive_Op; }),
@@ -180,6 +183,7 @@ namespace Compiler
                     lexerFSM.Add(State.Char_start, new Dictionary<Event, Action<char>>());
                     lexerFSM.Add(State.Char_number, new Dictionary<Event, Action<char>>());
                     lexerFSM.Add(State.Comma, new Dictionary<Event, Action<char>>());
+                    lexerFSM.Add(State.At, new Dictionary<Event, Action<char>>());
                     lexerFSM.Add(State.Dot, new Dictionary<Event, Action<char>>());
                     lexerFSM.Add(State.DotDot, new Dictionary<Event, Action<char>>());
                     lexerFSM.Add(State.Literal_start, new Dictionary<Event, Action<char>>());
@@ -241,6 +245,12 @@ namespace Compiler
                         currentStates.Add(State.Comma);
                         currentStates.Remove(State.Start);
                         specialSymbolData.Value = Lexem.SpecialSymbol.Comma;
+                    }));
+                    lexerFSM[State.Start].Add(Event.At, new Action<char>((ch) =>
+                    {
+                        currentStates.Add(State.At);
+                        currentStates.Remove(State.Start);
+                        specialSymbolData.Value = Lexem.SpecialSymbol.At;
                     }));
                     lexerFSM[State.Start].Add(Event.Dot, new Action<char>((ch) =>
                     {
@@ -631,6 +641,8 @@ namespace Compiler
                 lexerFSM[State.Minus] = new Dictionary<Event, Action<char>>();
                 //Comma
                 lexerFSM[State.Comma] = new Dictionary<Event, Action<char>>();
+                //At
+                lexerFSM[State.At] = new Dictionary<Event, Action<char>>();
                 //DotDot
                 lexerFSM[State.DotDot] = new Dictionary<Event, Action<char>>();
                 //Asterisk
@@ -772,6 +784,9 @@ namespace Compiler
                             e.Add(Event.Quote);
                             break;
                         case ',':
+                            e.Add(Event.Comma);
+                            break;
+                        case '@':
                             e.Add(Event.Comma);
                             break;
                         case '.':

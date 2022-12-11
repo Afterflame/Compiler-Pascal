@@ -43,6 +43,7 @@ namespace Compiler
             RParenthese,// )
             LBracket,// [
             RBracket,// ]
+            At,// @
             Comma,
             Dot,
             DotDot,

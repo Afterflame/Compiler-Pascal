@@ -28,6 +28,7 @@ namespace Compiler
             this.lexem = lexem;
         }
     }
+    
     internal class ConstNode : Node
     {
         Node value;
@@ -150,13 +151,17 @@ namespace Compiler
     }
     internal class VariableNode : Node
     {
+        bool isRef;
         public Lexem lexem;
+        List<Node> args;
         public override string getVal()
         {
             return lexem.Value.ToString();
         }
-        public VariableNode(Lexem lexem)
+        public VariableNode(Lexem lexem, bool isRef = false, List<Node> args = null)
         {
+            this.args = args;
+            this.isRef = isRef;
             this.lexem = lexem;
         }
         public override List<Node> GetChildren()
