@@ -12,6 +12,19 @@ namespace Compiler
         public abstract string getVal();
         public abstract List<Node> GetChildren();
     }
+
+    internal class VarNode : Node
+    {
+        List<Node> children;
+        public override List<Node> GetChildren()
+        {
+            return children;
+        }
+        public override string getVal()
+        {
+            return "transit";
+        }
+    }
     internal class TransitNode : Node
     {
         List<Node> children;
@@ -250,6 +263,7 @@ namespace Compiler
         }
         public override string getVal()
         {
+            //FIX
             switch (op.Value)
             {
                 case Lexem.SpecialSymbol.Plus:
@@ -270,6 +284,71 @@ namespace Compiler
             this.left = left;
             this.right = right;
         }
+    }
+    internal class RelationalOp : BinOpNode
+    {
+        public override string getVal()
+        {
+            switch (op.Value)
+            {
+                case Lexem.SpecialSymbol.Equal:
+                    return "=";
+                case Lexem.SpecialSymbol.NotEq:
+                    return "!=";
+                case Lexem.SpecialSymbol.Less:
+                    return "<";
+                case Lexem.SpecialSymbol.LessEq:
+                    return "<=";
+                case Lexem.SpecialSymbol.Greater:
+                    return ">";
+                case Lexem.SpecialSymbol.GreaterEq:
+                    return ">=";
+                case Lexem.KeyWord.IN:
+                    return "IN";
+            }
+            return op.Value.ToString();
+        }
+        public RelationalOp(Lexem op, Node left, Node right) : base(op, left, right) { }
+    }
+    internal class MultiplicativeOp: BinOpNode
+    {
+        public override string getVal()
+        {
+            switch (op.Value)
+            {
+                case Lexem.SpecialSymbol.Multiply:
+                    return "*";
+                case Lexem.SpecialSymbol.Divide:
+                    return "/";
+                case Lexem.KeyWord.DIV:
+                    return "DIV";
+                case Lexem.KeyWord.MOD:
+                    return "MOD";
+                case Lexem.KeyWord.AND:
+                    return "AND";
+            }
+
+            return op.Value.ToString();
+        }
+        public MultiplicativeOp(Lexem op, Node left, Node right) : base(op, left, right) { }
+    }
+    internal class AdditiveOp : BinOpNode
+    {
+        public override string getVal()
+        {
+            switch (op.Value)
+            {
+                case Lexem.SpecialSymbol.Plus:
+                    return "+";
+                case Lexem.SpecialSymbol.Minus:
+                    return "-";
+                case Lexem.KeyWord.OR:
+                    return "OR";
+            }
+
+            return op.Value.ToString();
+        }
+        public AdditiveOp(Lexem op, Node left, Node right) : base(op, left, right) { }
     }
     internal class FunctionTypeNode : Node
     {
@@ -391,6 +470,42 @@ namespace Compiler
         public override List<Node> GetChildren()
         {
             return new List<Node> { };
+        }
+    }
+    internal class SetNode : Node
+    {
+        List<Node> children;
+        public override string getVal()
+        {
+            return "Set";
+        }
+        public SetNode(List<Node> children)
+        {
+            this.children = children;
+        }
+        public override List<Node> GetChildren()
+        {
+            return children;
+        }
+    }
+    internal class ElementNode : Node
+    {
+        public Node left;
+        public Node right;
+        public override List<Node> GetChildren()
+        {
+            if (right != null)
+                return new List<Node> { left, right };
+            return new List<Node> { left };
+        }
+        public override string getVal()
+        {
+            return "Element";
+        }
+        public ElementNode(Node left, Node right=null)
+        {
+            this.left = left;
+            this.right = right;
         }
     }
 }

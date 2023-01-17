@@ -203,7 +203,7 @@ namespace Compiler
                 throw new Exception(ErrorConstructor.GetPositionMassage(lexer.Line, lexer.Idx, Error.XExpexted, ":="));
             return new ProcedureStatementNode(new VariableNode(false, lex));
         }
-            public Node ParseConstDefPart()
+        public Node ParseConstDefPart()
         {
             if (!lexer.Token.Value.Equals(Lexem.KeyWord.CONST))
                 throw new ArgumentException(ErrorConstructor.GetPositionMassage(lexer.Line, lexer.Idx, Error.XExpexted, "CONST"));
