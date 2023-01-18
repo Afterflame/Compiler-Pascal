@@ -13,8 +13,9 @@ namespace Compiler
         public abstract List<Node> GetChildren();
     }
 
-    internal class VarNode : Node
+    internal class ListNode : Node
     {
+        object type;
         List<Node> children;
         public override List<Node> GetChildren()
         {
@@ -22,22 +23,11 @@ namespace Compiler
         }
         public override string getVal()
         {
-            return "transit";
+            return "List " + type.ToString(); ;
         }
-    }
-    internal class TransitNode : Node
-    {
-        List<Node> children;
-        public override List<Node> GetChildren()
+        public ListNode(object type, List<Node> children)
         {
-            return children;
-        }
-        public override string getVal()
-        {
-            return "transit";
-        }
-        public TransitNode(List<Node> children)
-        {
+            this.type = type;
             this.children = children;
         }
     }
@@ -58,7 +48,23 @@ namespace Compiler
             this.lexem = lexem;
         }
     }
-    
+
+    internal class UConstNode : Node
+    {
+        Node value;
+        public override List<Node> GetChildren()
+        {
+            return new List<Node> { value };
+        }
+        public override string getVal()
+        {
+            return "UConst";
+        }
+        public UConstNode(Node value)
+        {
+            this.value = value;
+        }
+    }
     internal class ConstNode : Node
     {
         Node value;
@@ -69,12 +75,12 @@ namespace Compiler
         }
         public override string getVal()
         {
-            return "Const";
+            return "Const" + (sign > 0 ? "+" : "-");
         }
-        public ConstNode(Node value, int sign = 1)
+        public ConstNode(Node value, int sign)
         {
-            this.sign = sign;
             this.value = value;
+            this.sign = sign;
         }
     }
     internal class ConstDefinitionPartNode : Node
@@ -125,7 +131,6 @@ namespace Compiler
         {
         }
     }
-
     internal class ForStatementNode : Node
     {
         Node identifier;
@@ -164,25 +169,65 @@ namespace Compiler
             this.statement = statement;
         }
     }
-    internal class RepeatStatementNode : Node
+    internal class IfStatementNode : Node
     {
         Node condition;
         Node statement;
+        Node altStatement;
         public override List<Node> GetChildren()
         {
+            if(altStatement != null)
+                return new List<Node> { condition, statement, altStatement };
             return new List<Node> { condition, statement };
+        }
+        public override string getVal()
+        {
+            return "WhileStatementNode";
+        }
+        public IfStatementNode(Node condition, Node statement, Node altStatement)
+        {
+            this.condition = condition;
+            this.statement = statement;
+            this.altStatement = altStatement;
+        }
+    }
+    internal class RepeatStatementNode : Node
+    {
+        Node condition;
+        Node statements;
+        public override List<Node> GetChildren()
+        {
+            return new List<Node> { condition, statements };
         }
         public override string getVal()
         {
             return "RepetetiveStatement";
         }
-        public RepeatStatementNode(Node condition, Node statement)
+        public RepeatStatementNode(Node condition, Node statements)
         {
             this.condition = condition;
+            this.statements = statements;
+        }
+    }
+    internal class WithStatementNode : Node
+    {
+        Node recordVarList;
+        Node statement;
+        public override List<Node> GetChildren()
+        {
+            return new List<Node> { recordVarList, statement };
+        }
+        public override string getVal()
+        {
+            return "WithStatement";
+        }
+        public WithStatementNode(Node recordVarList, Node statement)
+        {
+            this.recordVarList = recordVarList;
             this.statement = statement;
         }
     }
-        internal class AssignStatementNode : Node
+    internal class AssignStatementNode : Node
     {
         Node to;
         Node from;
@@ -388,6 +433,42 @@ namespace Compiler
             return new List<Node> { value };
         }
     }
+    internal class VariableNode : Node
+    {
+        bool isRef;
+        Node identifier;
+        List<Node> args;
+        public override string getVal()
+        {
+            return (isRef ? "Ref var " : "var ") + identifier.getVal();
+        }
+        public VariableNode(bool isRef, Node identifier, List<Node> args = null)
+        {
+            this.args = args;
+            this.isRef = isRef;
+            this.identifier = identifier;
+        }
+        public override List<Node> GetChildren()
+        {
+            return args == null ? new List<Node> { } : args;
+        }
+    }
+    internal class IdentifierNode : Node
+    {
+        public Lexem lexem;
+        public override string getVal()
+        {
+            return lexem.Value.ToString();
+        }
+        public IdentifierNode(Lexem lexem)
+        {
+            this.lexem = lexem;
+        }
+        public override List<Node> GetChildren()
+        {
+            return new List<Node> { };
+        }
+    }
     internal class NotFactorNode : Node
     {
         Node value;
@@ -420,26 +501,6 @@ namespace Compiler
             return new List<Node> { };
         }
     }
-    internal class VariableNode : Node
-    {
-        bool isRef;
-        public Lexem lexem;
-        List<Node> args;
-        public override string getVal()
-        {
-            return lexem.Value.ToString();
-        }
-        public VariableNode(bool isRef, Lexem lexem, List<Node> args = null)
-        {
-            this.args = args;
-            this.isRef = isRef;
-            this.lexem = lexem;
-        }
-        public override List<Node> GetChildren()
-        {
-            return args==null ? new List<Node> { } : args;
-        }
-    }
     internal class StringNode : Node
     {
         public Lexem lexem;
@@ -466,6 +527,17 @@ namespace Compiler
         public BoolNode(bool value)
         {
             this.value = value;
+        }
+        public override List<Node> GetChildren()
+        {
+            return new List<Node> { };
+        }
+    }
+    internal class NILNode : Node
+    {
+        public override string getVal()
+        {
+            return "NIL";
         }
         public override List<Node> GetChildren()
         {

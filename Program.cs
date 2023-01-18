@@ -77,7 +77,7 @@ namespace Compiler
             {
                 Lexer lexer = new Lexer(fileText);
                 Parser parser = new Parser(ref lexer);
-                Node exp = parser.ParseExpression();
+                Node exp = parser.ParseSimpleExpression();
                 if ((!lexer.Token.Value.Equals(Lexem.SpecialSymbol.EOF) || !lexer.Token.Value.Equals(Lexem.SpecialSymbol.EOL)))
                     throw new Exception(ErrorConstructor.GetPositionMassage(lexer.Line, lexer.Idx, Error.UnexpectedSymbol));
                 Parser.PrintExpressionTree(exp, "", true);
@@ -112,7 +112,7 @@ namespace Compiler
             //{
                 Lexer lexer = new Lexer(fileText);
                 Parser parser = new Parser(ref lexer);
-                Node exp = parser.ParseVariableOrFunction();
+                Node exp = parser.ParseSimpleStatement();
                 Parser.PrintExpressionTree(exp, "", true);
             /*}
             catch (Exception ex)

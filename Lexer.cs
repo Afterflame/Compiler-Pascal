@@ -98,6 +98,26 @@ namespace Compiler
             EOL,// \n
             EOF,// i = length
         }
+        class LexerStateBackUp
+        {
+            public Lexem Token { get; private set; }
+            public int Idx { get; private set; }
+            public int Line { get; private set; }
+            public int it { get; private set; }
+            public int idx { get; private set; }
+            public int line { get; private set; }
+
+            public LexerStateBackUp(Lexem token, int Idx, int Line, int it, int idx, int line)
+            {
+                Token = token;
+                this.Idx = Idx;
+                this.Line = Line;
+                this.it = it;
+                this.idx = idx;
+                this.line = line;
+            }
+        }
+        LexerStateBackUp backUp;
         Lexem.UIntData uIntData;
         Lexem.URealData uRealData;
         Lexem.LiteralData literalData;
@@ -829,6 +849,12 @@ namespace Compiler
                         case '=':
                             e.Add(Event.Equal);
                             break;
+                        case '>':
+                            e.Add(Event.Greater);
+                            break;
+                        case '<':
+                            e.Add(Event.Less);
+                            break;
                         case ':':
                             e.Add(Event.Colon);
                             break;
@@ -866,6 +892,19 @@ namespace Compiler
             while (Token.Type == Lexem.Types.Comment || Token.Value.Equals(Lexem.SpecialSymbol.Space))
                 Token = GetNextToken();
             return Token;
+        }
+        public void SaveState()
+        {
+            backUp = new LexerStateBackUp(Token, Idx, Line, it, idx, line);
+        }
+        public void RestoreState()
+        {
+            Token = backUp.Token;
+            Idx = backUp.Idx;
+            Line = backUp.Line;
+            it = backUp.it;
+            idx = backUp.idx;
+            line = backUp.line;
         }
         private Lexem GetNextToken()
         {
