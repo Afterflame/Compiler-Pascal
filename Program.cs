@@ -112,7 +112,7 @@ namespace Compiler
             //{
                 Lexer lexer = new Lexer(fileText);
                 Parser parser = new Parser(ref lexer);
-                Node exp = parser.ParseSimpleStatement();
+                Node exp = parser.ParseRecordType();
                 Parser.PrintExpressionTree(exp, "", true);
             /*}
             catch (Exception ex)

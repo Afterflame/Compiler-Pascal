@@ -55,6 +55,8 @@ namespace Compiler
         }
         public enum KeyWord
         {
+            CASE,
+            STRING,
             AND,
             ARRAY,
             BEGIN,

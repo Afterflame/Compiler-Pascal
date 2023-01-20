@@ -1,1 +1,5 @@
-a14 := 6
+record
+    id11, id12: type1;
+    id21, id22: type2;
+    id31, id32: type3
+end

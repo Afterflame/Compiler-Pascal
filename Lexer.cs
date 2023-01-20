@@ -888,10 +888,11 @@ namespace Compiler
         }
         public Lexem NextToken()
         {
+            var lastToken = Token;
             Token = GetNextToken();
-            while (Token.Type == Lexem.Types.Comment || Token.Value.Equals(Lexem.SpecialSymbol.Space))
+            while (Token.Type == Lexem.Types.Comment || Token.Value.Equals(Lexem.SpecialSymbol.Space) || Token.Value.Equals(Lexem.SpecialSymbol.EOL))
                 Token = GetNextToken();
-            return Token;
+            return lastToken;
         }
         public void SaveState()
         {

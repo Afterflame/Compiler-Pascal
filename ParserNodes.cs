@@ -131,24 +131,46 @@ namespace Compiler
         {
         }
     }
-    internal class ForStatementNode : Node
+    internal class LabelStatementNode : Node
     {
-        Node identifier;
-        Node forList;
+        Node label;
         Node statement;
         public override List<Node> GetChildren()
         {
-            return new List<Node> { identifier, forList, statement };
+            return new List<Node> { label, statement };
         }
         public override string getVal()
         {
-            return "ForStatementNode";
+            return "LabelStatementNode";
         }
-        public ForStatementNode(Node identifier, Node forList, Node statement)
+        public LabelStatementNode(Node label, Node statement)
+        {
+            this.label = label;
+            this.statement = statement;
+        }
+    }
+    internal class ForStatementNode : Node
+    {
+        Node identifier;
+        Node initial;
+        Node final;
+        Node statement;
+        int direction;
+        public override List<Node> GetChildren()
+        {
+            return new List<Node> { identifier, initial, final, statement };
+        }
+        public override string getVal()
+        {
+            return "ForStatementNode "+ direction;
+        }
+        public ForStatementNode(Node identifier, Node initial, Node final, Node statement, int direction)
         {
             this.identifier = identifier;
-            this.forList = forList;
+            this.initial = initial;
+            this.final = final;
             this.statement = statement;
+            this.direction = direction;
         }
     }
     internal class WhileStatementNode : Node
@@ -560,6 +582,108 @@ namespace Compiler
             return children;
         }
     }
+    internal class RecordTypeNode : Node
+    {
+        public Node recordList;
+        public override List<Node> GetChildren()
+        {
+            return new List<Node>() { recordList };
+        }
+        public override string getVal()
+        {
+            return "RecordList";
+        }
+        public RecordTypeNode(Node recordList)
+        {
+            this.recordList = recordList;
+        }
+    }
+    internal class ScalarTypeNode : Node
+    {
+        public Node identifierList;
+        public override List<Node> GetChildren()
+        {
+            return new List<Node>() { identifierList };
+        }
+        public override string getVal()
+        {
+            return "ScalarType";
+        }
+        public ScalarTypeNode(Node identifierList)
+        {
+            this.identifierList = identifierList;
+        }
+    }
+    internal class SubrangeTypeNode : Node
+    {
+        public Node initial;
+        public Node final;
+        public override List<Node> GetChildren()
+        {
+            return new List<Node>() { initial, final };
+        }
+        public override string getVal()
+        {
+            return "SubrangeType";
+        }
+        public SubrangeTypeNode(Node initial, Node final)
+        {
+            this.initial = initial;
+            this.final = final;
+        }
+    }
+    internal class StringTypeNode : Node
+    {
+        public Node value;
+        public override List<Node> GetChildren()
+        {
+            return new List<Node>() { value };
+        }
+        public override string getVal()
+        {
+            return "StringType";
+        }
+        public StringTypeNode(Node value)
+        {
+            this.value = value;
+        }
+    }
+    internal class TypeIdentifierNode : Node
+    {
+        public object value;
+        public Node child;
+        public override List<Node> GetChildren()
+        {
+            return new List<Node>() { child };
+        }
+        public override string getVal()
+        {
+                return value.ToString();
+        }
+        public TypeIdentifierNode(object value, Node child=null)
+        {
+            this.value = value;
+            this.child = child;
+        }
+    }
+    internal class ArrayTypeNode : Node
+    {
+        public Node conponentType;
+        public Node typeList;
+        public override List<Node> GetChildren()
+        {
+            return new List<Node>() { conponentType, typeList };
+        }
+        public override string getVal()
+        {
+            return "ArrayType";
+        }
+        public ArrayTypeNode(Node conponentType, Node typeList)
+        {
+            this.conponentType = conponentType;
+            this.typeList = typeList;
+        }
+    }
     internal class ElementNode : Node
     {
         public Node left;
@@ -574,10 +698,44 @@ namespace Compiler
         {
             return "Element";
         }
-        public ElementNode(Node left, Node right=null)
+        public ElementNode(Node left, Node right = null)
         {
             this.left = left;
             this.right = right;
+        }
+    }
+    internal class FieldListNode : Node
+    {
+        public Node fixedP;
+        public override List<Node> GetChildren()
+        {
+            return new List<Node>() { fixedP };
+        }
+        public override string getVal()
+        {
+            return "FieldList";
+        }
+        public FieldListNode(Node fixedP)
+        {
+            this.fixedP = fixedP;
+        }
+    }
+    internal class RecordSectionNode : Node
+    {
+        public Node identifiers;
+        public Node type;
+        public override List<Node> GetChildren()
+        {
+            return new List<Node>() { identifiers, type };
+        }
+        public override string getVal()
+        {
+            return "RecordSection";
+        }
+        public RecordSectionNode(Node identifiers, Node type)
+        {
+            this.identifiers = identifiers;
+            this.type = type;
         }
     }
 }
