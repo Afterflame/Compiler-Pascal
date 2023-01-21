@@ -1,5 +1,18 @@
-record
-    id11, id12: type1;
-    id21, id22: type2;
-    id31, id32: type3
-end
+program posneg;
+var 
+ no : integer;
+begin
+  Write('Enger a number:');
+  readln(no);
+
+  if (no > 0) then
+   writeln('You enter Positive Number')
+  else
+    if (no < 0) then
+     writeln('You enter Negative number')
+    else
+      if (no = 0) then
+      writeln('You enter Zero');
+
+  readln;
+ end.

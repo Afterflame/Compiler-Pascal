@@ -730,7 +730,7 @@ namespace Compiler
             }
             foreach (Event e in (Event[])Enum.GetValues(typeof(Event)))
             {
-                if (e != Event.HexNumber)
+                if (e != Event.HexNumber && e != Event.E)
                 {
                     if (e != Event.Asterisk)
                         lexerFSM[State.Comment_double][e] = new Action<char>((ch) => { });

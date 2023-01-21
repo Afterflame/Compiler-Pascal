@@ -11,20 +11,26 @@ namespace Compiler
     {
         public static void PrintExpressionTree(Node tree, string indent, bool last)
         {
+            var value = (tree != null ? tree.getVal() : "null");
             if (indent == "")
             {
-                Console.WriteLine(indent + " " + tree.getVal());
+                Console.WriteLine(indent + " " + value);
                 indent += last ? " " : "│ ";
             }
             else
             {
-                Console.WriteLine(indent + (last ? "└── " : "├── ") + tree.getVal());
+                Console.WriteLine(indent + (last ? "└── " : "├── ") + value);
                 indent += last ? "    " : "│   ";
             }
 
-            List<Node> list = tree.GetChildren();
+            List<Node> list = ( tree != null ? tree.GetChildren() : new List<Node>(){ } );
             foreach (Node node in list)
             {
+                if(node == null)
+                {
+                    PrintExpressionTree(node, indent, false);
+                    return;
+                }
                 if (node.Equals(list.Last()))
                 {
                     PrintExpressionTree(node, indent, true);
@@ -52,6 +58,22 @@ namespace Compiler
             if (!lexer.Token.Value.Equals(value))
                 throw new ArgumentException(ErrorConstructor.GetPositionMassage(lexer.Line, lexer.Idx, Error.XExpexted, msg));
             lexer.NextToken();
+        }
+
+        public Node ParseProgramm()
+        {
+            var heading = ParseHeading();
+            var body = ParseBlock();
+            Throw_OtherValueOfLexer_Special(Lexem.SpecialSymbol.Dot, ".");
+            Throw_OtherValueOfLexer_Special(Lexem.SpecialSymbol.EOF, "EOF");
+            return new ProgrammNode(heading, body);
+        }
+        public Node ParseHeading()
+        {
+            Throw_OtherValueOfLexer_KeyWord(Lexem.KeyWord.PROGRAM);
+            var identifier = ParseIdentifier();
+            Throw_OtherValueOfLexer_Special(Lexem.SpecialSymbol.Semicolon, ";");
+            return new HeadingNode(identifier);
         }
 
 
@@ -170,7 +192,7 @@ namespace Compiler
                 }
 
             }
-            return new VariableNode(isRef, node, args);
+            return new VariableNode(isRef, node, new ListNode("args",args));
         }
         public Node ParseSet()
         {
@@ -214,7 +236,7 @@ namespace Compiler
             while (lexer.Token.Value.Equals(Lexem.SpecialSymbol.Semicolon))
             {
                 lexer.NextToken();
-                ParseStatement();
+                statements.Add(ParseStatement());
             }
             return new ListNode("statements", statements);
         }
@@ -228,10 +250,14 @@ namespace Compiler
                 Throw_OtherValueOfLexer_Special(Lexem.SpecialSymbol.Colon, ":");
             }
             Node statement;
-            if (lexer.Token.Type == Lexem.Types.KeyWord)
-                statement = ParseCompoundStatement();
-            else
+            try
+            {
+                statement = ParseStructuredStatement();
+            }
+            catch
+            {
                 statement = ParseSimpleStatement();
+            }
             if (label != null)
                 return new LabelStatementNode(label, statement);
             return statement;
@@ -264,6 +290,7 @@ namespace Compiler
             var statement = ParseStatement();
             Node altStatement = null;
             if (lexer.Token.Value.Equals(Lexem.KeyWord.ELSE)) {
+                lexer.NextToken();
                 altStatement = ParseStatement();
             }
             return new IfStatementNode(expression, statement, altStatement);
@@ -510,27 +537,38 @@ namespace Compiler
 
 
         //Def's
-        public Node ParseConstDef()
+        public Node ParseDeclDefElement()
         {
-            Throw_OtherValueOfLexer_KeyWord(Lexem.KeyWord.CONST);
-            var identifier = ParseIdentifier();
-            Throw_OtherValueOfLexer_Special(Lexem.SpecialSymbol.Equal, "=");
-            var answer = new ConstDefinitionNode(new VariableNode(false, identifier), ParseConst());
-            Throw_OtherValueOfLexer_Special(Lexem.SpecialSymbol.Semicolon, ";");
-            return answer;
+            if (lexer.Token.Type == Lexem.Types.Identifier)
+                return ParseTypeDefinition();
+            switch (lexer.Token.Value)
+            {
+                case Lexem.KeyWord.LABEL:
+                    return ParseLabelDecl();
+                case Lexem.KeyWord.CONST:
+                    return ParseConstDef();
+                case Lexem.KeyWord.VAR:
+                    return ParseVariableDeclPart();
+                case Lexem.KeyWord.PROCEDURE:
+                    return ParseProcedureDecl();
+                case Lexem.KeyWord.FUNCTION:
+                    return ParseFunctionDecl();
+                default:
+                    break;
+            }
+            throw new ArgumentException(ErrorConstructor.GetPositionMassage(lexer.Line, lexer.Idx, Error.XExpexted, "Declaration Part"));
         }
         public Node ParseVariableDeclPart()
         {
             Throw_OtherValueOfLexer_KeyWord(Lexem.KeyWord.VAR);
-            var list = new List<Node>(); 
-            list.Add(ParseVariableDecl());
-            while (true)
+            var list = new List<Node>();
+            list.AddRange(ParseVariableDecl());
+            while (lexer.Token.Type == Lexem.Types.Identifier)
             {
                 lexer.SaveState();
-                Throw_OtherValueOfLexer_Special(Lexem.SpecialSymbol.Semicolon, ";");
                 try
                 {
-                    list.Add(ParseVariableDecl());
+                    list.AddRange(ParseVariableDecl());
                 }
                 catch
                 {
@@ -538,15 +576,164 @@ namespace Compiler
                     return new ListNode("VariableDecls", list);
                 }
             }
+            return new ListNode("VariableDecls", list);
         }
-        public Node ParseVariableDecl()
+        public Node ParseConstDefPart()
         {
+            Throw_OtherValueOfLexer_KeyWord(Lexem.KeyWord.CONST);
+            var list = new List<Node>();
+            list.Add(ParseConstDef());
+            while (lexer.Token.Type == Lexem.Types.Identifier)
+            {
+                lexer.SaveState();
+                try
+                {
+                    list.Add(ParseConstDef());
+                }
+                catch
+                {
+                    lexer.RestoreState();
+                    return new ListNode("ConstDefs", list);
+                }
+            }
+            return new ListNode("ConstDefs", list);
+        }
+        public Node ParseConstDef()
+        {
+            var identifier = ParseIdentifier();
+            Throw_OtherValueOfLexer_Special(Lexem.SpecialSymbol.Equal, "=");
+            var ans = new ConstDefinitionNode(new VariableNode(false, identifier), ParseConst());
+            Throw_OtherValueOfLexer_Special(Lexem.SpecialSymbol.Semicolon, ";");
+            return ans;
+        }
+        public List<Node> ParseVariableDecl()
+        {
+            var identifierList = ParseIdentifierList();
+            Throw_OtherValueOfLexer_Special(Lexem.SpecialSymbol.Colon, ":");
+            var list = new List<Node>();
+            var type = ParseType();
+            foreach (var identifier in identifierList.GetChildren())
+            {
+                list.Add(new VariableDeclNode(identifier, type));
+            }
+            Throw_OtherValueOfLexer_Special(Lexem.SpecialSymbol.Semicolon, ";");
+            return list;
+        }
+        public Node ParseBlock()
+        {
+            var list = new List<Node>();
+            while (!lexer.Token.Value.Equals(Lexem.KeyWord.BEGIN))
+            {
+                list.Add(ParseDeclDefElement());
+            }
+            var body = ParseCompoundStatement();
+            return new BlockNode(new ListNode("Declarations", list), body);
+        }
+        public Node ParseLabelDecl()
+        {
+            Throw_OtherValueOfLexer_KeyWord(Lexem.KeyWord.LABEL);
+            if(lexer.Token.Type!=Lexem.Types.UInteger)
+                throw new ArgumentException(ErrorConstructor.GetPositionMassage(lexer.Line, lexer.Idx, Error.XExpexted, "UInt"));
+            var list = new List<Node>();
+            list.Add(new NumberNode(lexer.Token));
+            lexer.NextToken();
+            while (lexer.Token.Value.Equals(Lexem.SpecialSymbol.Comma))
+            {
+                lexer.NextToken();
+                if (lexer.Token.Type != Lexem.Types.UInteger)
+                    throw new ArgumentException(ErrorConstructor.GetPositionMassage(lexer.Line, lexer.Idx, Error.XExpexted, "UInt"));
+                list.Add(new NumberNode(lexer.Token));
+                lexer.NextToken();
+            }
+            Throw_OtherValueOfLexer_Special(Lexem.SpecialSymbol.Semicolon, ";");
+            return new LabelDeclNode(new ListNode("Lables", list));
+        }
+        public Node ParseFunctionDecl()
+        {
+            Throw_OtherValueOfLexer_KeyWord(Lexem.KeyWord.FUNCTION);
+            var identifier = ParseIdentifier();
+            lexer.SaveState();
+            Node list = null;
+            try
+            {
+                list = ParseFParamenerList();
+            }
+            catch
+            {
+                lexer.RestoreState();
+            }
+            Throw_OtherValueOfLexer_Special(Lexem.SpecialSymbol.Colon, ":");
+            var tIdentifier = ParseTypeIdentifier();
+            Throw_OtherValueOfLexer_Special(Lexem.SpecialSymbol.Semicolon, ";");
+            var block = ParseBlock();
+            Throw_OtherValueOfLexer_Special(Lexem.SpecialSymbol.Semicolon, ";");
+            return new FunctionDeclNode(identifier, list, tIdentifier, block);
+        }
+        public Node ParseProcedureDecl()
+        {
+            Throw_OtherValueOfLexer_KeyWord(Lexem.KeyWord.FUNCTION);
+            var identifier = ParseIdentifier();
+            lexer.SaveState();
+            Node list = null;
+            try
+            {
+                list = ParseFParamenerList();
+            }
+            catch
+            {
+                lexer.RestoreState();
+            }
+            Throw_OtherValueOfLexer_Special(Lexem.SpecialSymbol.Semicolon, ";");
+            var block = ParseBlock();
+            Throw_OtherValueOfLexer_Special(Lexem.SpecialSymbol.Semicolon, ";");
+            return new ProcedureDeclNode(identifier, list, block);
+        }
+        public Node ParseTypeDefinition()
+        {
+            var identifier = ParseIdentifier();
+            Throw_OtherValueOfLexer_Special(Lexem.SpecialSymbol.Equal, "=");
+            if (lexer.Token.Value.Equals(Lexem.KeyWord.PROCEDURE))
+                return new TypeDefinitionNode(identifier, ParseFuncionType());
+            return new TypeDefinitionNode(identifier, ParseFuncionType());
+        }
+        public Node ParseFuncionType()
+        {
+            Throw_OtherValueOfLexer_KeyWord(Lexem.KeyWord.FUNCTION);
+            var list = ParseFParamenerList();
+            Throw_OtherValueOfLexer_Special(Lexem.SpecialSymbol.Colon, ":");
+            return new FunctionTypeNode(list, ParseTypeIdentifier());
+        }
+        public Node ParseProcedureType()
+        {
+            Throw_OtherValueOfLexer_KeyWord(Lexem.KeyWord.PROCEDURE);
+            var list = ParseFParamenerList();
+            return new ProcedureTypeNode(list);
+        }
+
+        public Node ParseFParamenerList()
+        {
+            Throw_OtherValueOfLexer_Special(Lexem.SpecialSymbol.LParenthese, "(");
+            var list = new List<Node>();
+            list.Add(ParseParamenerGroup());
+            while (lexer.Token.Value.Equals(Lexem.SpecialSymbol.Semicolon))
+            {
+                list.Add(ParseParamenerGroup());
+            }
+            Throw_OtherValueOfLexer_Special(Lexem.SpecialSymbol.RParenthese, ")");
+            return new ListNode("FParamenerList", list);
+        }
+        public Node ParseParamenerGroup()
+        {
+            bool isVar = false;
+            if (lexer.Token.Value.Equals(Lexem.KeyWord.VAR))
+                isVar = true;
+            lexer.NextToken();
             var list = ParseIdentifierList();
             Throw_OtherValueOfLexer_Special(Lexem.SpecialSymbol.Colon, ":");
-            return new VariableDeclNode(list, ParseType());
+            var tIdentifier = ParseTypeIdentifier();
+            return new FParameterGroupNode(list, tIdentifier, isVar);
         }
-
-
+        
         //types
         public Node ParseSimpleType()
         {

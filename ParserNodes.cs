@@ -13,6 +13,228 @@ namespace Compiler
         public abstract List<Node> GetChildren();
     }
 
+    internal class ProgrammNode : Node
+    {
+        Node heading;
+        Node body;
+        public override List<Node> GetChildren()
+        {
+            return new List<Node> { heading, body };
+        }
+        public override string getVal()
+        {
+            return "Programm";
+        }
+        public ProgrammNode(Node heading, Node body)
+        {
+            this.heading = heading;
+            this.body = body;
+        }
+    }
+
+    internal class HeadingNode : Node
+    {
+        Node identifier;
+        public override List<Node> GetChildren()
+        {
+            return new List<Node> { identifier };
+        }
+        public override string getVal()
+        {
+            return "Heading";
+        }
+        public HeadingNode(Node identifier)
+        {
+            this.identifier = identifier;
+        }
+    }
+    internal class ConstDefinitionNode : Node
+    {
+        Node identifier;
+        Node value;
+        public override List<Node> GetChildren()
+        {
+            return new List<Node> { identifier, value };
+        }
+        public override string getVal()
+        {
+            return "ConstDef";
+        }
+        public ConstDefinitionNode(Node identifier, Node value)
+        {
+            this.identifier = identifier;
+            this.value = value;
+        }
+    }
+    internal class TypeDefinitionNode : Node
+    {
+        Node identifier;
+        Node value;
+        public override List<Node> GetChildren()
+        {
+            return new List<Node> { identifier, value };
+        }
+        public override string getVal()
+        {
+            return "ConstDef";
+        }
+        public TypeDefinitionNode(Node identifier, Node value)
+        {
+            this.identifier = identifier;
+            this.value = value;
+        }
+    }
+    internal class ProcedureTypeNode : Node
+    {
+        Node args;
+        public override List<Node> GetChildren()
+        {
+            return new List<Node> { args };
+        }
+        public override string getVal()
+        {
+            return "ProcedureType";
+        }
+        public ProcedureTypeNode(Node args)
+        {
+            this.args = args;
+        }
+    }
+    internal class FunctionTypeNode : Node
+    {
+        Node args;
+        Node resultType;
+        public override List<Node> GetChildren()
+        {
+            return new List<Node> { args, resultType };
+        }
+        public override string getVal()
+        {
+            return "FunctionType";
+        }
+        public FunctionTypeNode(Node args, Node resultType)
+        {
+            this.args = args;
+            this.resultType = resultType;
+        }
+    }
+
+    internal class VariableDeclPartNode : Node
+    {
+        Node listVariableDecls;
+        public override List<Node> GetChildren()
+        {
+            return new List<Node> { listVariableDecls };
+        }
+        public override string getVal()
+        {
+            return "VariableDeclPart";
+        }
+        public VariableDeclPartNode(Node listVariableDecls)
+        {
+            this.listVariableDecls = listVariableDecls;
+        }
+    }
+    internal class VariableDeclNode : Node
+    {
+        Node identifier;
+        Node type;
+        public override List<Node> GetChildren()
+        {
+            return new List<Node> { identifier, type };
+        }
+        public override string getVal()
+        {
+            return "VariableDecl";
+        }
+        public VariableDeclNode(Node identifier, Node type)
+        {
+            this.identifier = identifier;
+            this.type = type;
+        }
+    }
+
+    internal class ProcedureDeclNode : Node
+    {
+        Node identifier;
+        Node fParameterList;
+        Node block;
+        public override List<Node> GetChildren()
+        {
+            return new List<Node> { identifier, fParameterList, block };
+        }
+        public override string getVal()
+        {
+            return "ProcedureDecl";
+        }
+        public ProcedureDeclNode(Node identifier, Node fParameterList, Node block)
+        {
+            this.identifier = identifier;
+            this.fParameterList = fParameterList;
+            this.block = block;
+        }
+    }
+
+    internal class FunctionDeclNode : Node
+    {
+        Node identifier;
+        Node fParameterList;
+        Node resultType;
+        Node block;
+        public override List<Node> GetChildren()
+        {
+            return new List<Node> { identifier, fParameterList, resultType, block };
+        }
+        public override string getVal()
+        {
+            return "FunctionDecl";
+        }
+        public FunctionDeclNode(Node identifier, Node fParameterList, Node resultType, Node block)
+        {
+            this.identifier = identifier;
+            this.fParameterList = fParameterList;
+            this.resultType = resultType;
+            this.block = block;
+        }
+    }
+    internal class LabelDeclNode : Node
+    {
+        Node list;
+        public override List<Node> GetChildren()
+        {
+            return new List<Node> { list };
+        }
+        public override string getVal()
+        {
+            return "LabelDecl";
+        }
+        public LabelDeclNode(Node list)
+        {
+            this.list = list;
+        }
+    }
+
+    internal class FParameterGroupNode : Node
+    {
+        bool isVar;
+        Node identifierList;
+        Node type;
+        public override List<Node> GetChildren()
+        {
+            return new List<Node> { identifierList, type };
+        }
+        public override string getVal()
+        {
+            return "FParameterGroup" + (isVar ? ", var" : "");
+        }
+        public FParameterGroupNode(Node identifierList, Node type, bool isVar)
+        {
+            this.identifierList = identifierList;
+            this.type = type;
+            this.isVar = isVar;
+        }
+    }
+
     internal class ListNode : Node
     {
         object type;
@@ -23,7 +245,7 @@ namespace Compiler
         }
         public override string getVal()
         {
-            return "List " + type.ToString(); ;
+            return "List " + type.ToString();
         }
         public ListNode(object type, List<Node> children)
         {
@@ -31,7 +253,24 @@ namespace Compiler
             this.children = children;
         }
     }
-
+    internal class BlockNode : Node
+    {
+        Node declarations;
+        Node body;
+        public override List<Node> GetChildren()
+        {
+            return new List<Node> { declarations, body };
+        }
+        public override string getVal()
+        {
+            return "Block";
+        }
+        public BlockNode(Node declarations, Node body)
+        {
+            this.declarations = declarations;
+            this.body = body;
+        }
+    }
     internal class ConstChrNode : Node
     {
         Lexem lexem;
@@ -48,7 +287,6 @@ namespace Compiler
             this.lexem = lexem;
         }
     }
-
     internal class UConstNode : Node
     {
         Node value;
@@ -81,40 +319,6 @@ namespace Compiler
         {
             this.value = value;
             this.sign = sign;
-        }
-    }
-    internal class ConstDefinitionPartNode : Node
-    {
-        Node constDefinition;
-        public override List<Node> GetChildren()
-        {
-            return new List<Node> { constDefinition };
-        }
-        public override string getVal()
-        {
-            return "ConstDefPart";
-        }
-        public ConstDefinitionPartNode(Node constDefinition)
-        {
-            this.constDefinition = constDefinition;
-        }
-    }
-    internal class ConstDefinitionNode : Node
-    {
-        Node identifier;
-        Node value;
-        public override List<Node> GetChildren()
-        {
-            return new List<Node> { identifier, value };
-        }
-        public override string getVal()
-        {
-            return "ConstDef";
-        }
-        public ConstDefinitionNode(Node identifier, Node value)
-        {
-            this.identifier = identifier;
-            this.value = value;
         }
     }
     internal class EmptyStatementNode : Node
@@ -198,9 +402,7 @@ namespace Compiler
         Node altStatement;
         public override List<Node> GetChildren()
         {
-            if(altStatement != null)
                 return new List<Node> { condition, statement, altStatement };
-            return new List<Node> { condition, statement };
         }
         public override string getVal()
         {
@@ -297,7 +499,7 @@ namespace Compiler
         {
             return "FuncDesignator";
         }
-        public FunctionDesignatorNode(Node identifier, Node parameterList)
+        public FunctionDesignatorNode(Node identifier, Node parameterList = null)
         {
             this.identifier = identifier;
             this.parameterList = parameterList;
@@ -417,26 +619,6 @@ namespace Compiler
         }
         public AdditiveOp(Lexem op, Node left, Node right) : base(op, left, right) { }
     }
-    internal class FunctionTypeNode : Node
-    {
-        List<Node> formalParameterList;
-        Node resultType;
-        public override string getVal()
-        {
-            return "FunctionType";
-        }
-        public FunctionTypeNode(List<Node> formalParameterList, Node resultType)
-        {
-            this.formalParameterList = formalParameterList;
-            this.resultType = resultType;
-        }
-        public override List<Node> GetChildren()
-        {
-            List<Node> children = new List<Node> { resultType };
-            children.Concat(formalParameterList);
-            return children;
-        }
-    }
     internal class SignedFactorNode:Node
     {
         Node value;
@@ -459,20 +641,20 @@ namespace Compiler
     {
         bool isRef;
         Node identifier;
-        List<Node> args;
+        Node args;
         public override string getVal()
         {
             return (isRef ? "Ref var " : "var ") + identifier.getVal();
         }
-        public VariableNode(bool isRef, Node identifier, List<Node> args = null)
+        public VariableNode(bool isRef, Node identifier, Node args = null)
         {
-            this.args = args;
             this.isRef = isRef;
             this.identifier = identifier;
+            this.args = args;
         }
         public override List<Node> GetChildren()
         {
-            return args == null ? new List<Node> { } : args;
+            return new List<Node> { identifier, args };
         }
     }
     internal class IdentifierNode : Node
@@ -690,9 +872,7 @@ namespace Compiler
         public Node right;
         public override List<Node> GetChildren()
         {
-            if (right != null)
-                return new List<Node> { left, right };
-            return new List<Node> { left };
+            return new List<Node> { left, right };
         }
         public override string getVal()
         {
