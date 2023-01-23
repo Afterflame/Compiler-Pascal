@@ -15,38 +15,47 @@ namespace Compiler
             UnexpectedSymbol,
             InvalidSymbol,
             InvalidArgs,
+            InvalidAction,
             XExpexted,
+            XExpextedYGot,
         }
         public static class ErrorConstructor
         {
-            public static string GetPositionMassage(int line, int idx, Error err, string more="")
+            public static string GetPositionMassage(int line, int idx, Error err, string arg1 = null, string arg2 = null)
             {
-                string text;
+                var msg="";
                 switch (err)
                 {
                     case Error.CharRange:
-                        text = "Expexted number in [0,127] range as char code";
+                        msg = "Expexted number in [0,127] range as char code";
                         break;
                     case Error.UnknownSymbol:
-                        text = "Unknown symbol";
+                        msg = "Unknown symbol";
                         break;
                     case Error.InvalidSymbol:
-                        text = "Invalid symbol";
+                        msg = "Invalid symbol";
                         break;
                     case Error.InvalidArgs:
-                        text = "Invalid Arguments";
+                        msg = "Invalid Arguments";
                         break;
                     case Error.UnexpectedSymbol:
-                        text = "Unexpected symbol";
+                        msg = "Unexpected symbol";
+                        break;
+                    case Error.InvalidAction:
+                        msg = arg1 != null ? String.Format("\"{0}\" action is not valid", arg1) : "Action is not valid, wrong arguments";
                         break;
                     case Error.XExpexted:
-                        text = String.Format("{0} expected", more);
+                        msg = arg1 != null ? String.Format("\"{0}\" expected", arg1) : "X Expected, wrong arguments";
+                        break;
+                    case Error.XExpextedYGot:
+                        msg = (arg1 != null && arg2 != null) ? 
+                            String.Format("\"{0}\" expected but \"{1}\" got", arg1 ?? "error", arg2) : "X Expected Y Got, wrong arguments";
                         break;
                     default:
-                        text = "Unknown error";
+                        msg = "Unknown error";
                         break;
                 }
-                return text + " at " + line + " " + idx;
+                return msg + " at " + line + " " + idx;
             }
         }
         public static string fileText="";
@@ -76,11 +85,12 @@ namespace Compiler
             try
             {
                 Lexer lexer = new Lexer(fileText);
-                Parser parser = new Parser(ref lexer);
-                Node exp = parser.ParseSimpleExpression();
+                SimpleParser parser = new SimpleParser(ref lexer);
+                SimpleParser.Node exp = parser.ParseSimpleExpression();
                 if ((!lexer.Token.Value.Equals(Lexem.SpecialSymbol.EOF) || !lexer.Token.Value.Equals(Lexem.SpecialSymbol.EOL)))
                     throw new Exception(ErrorConstructor.GetPositionMassage(lexer.Line, lexer.Idx, Error.UnexpectedSymbol));
-                Parser.PrintExpressionTree(exp, "", true);
+                SimpleParser.PrintExpressionTree(exp, "", true);
+                SimpleParser.PrintExpressionTree(exp, "", true);
             }
             catch (Exception ex)
             {
@@ -111,9 +121,10 @@ namespace Compiler
             //try
             //{
                 Lexer lexer = new Lexer(fileText);
-                Parser parser = new Parser(ref lexer);
-                Node exp = parser.ParseProgramm();
-                Parser.PrintExpressionTree(exp, "", true);
+            Parser parser = new Parser(ref lexer);
+            Parser.Node exp = parser.ParseProgramm();
+            Parser.PrintNodeTree(exp, "", true);
+            Parser.PrintSymbolTable(parser.symTableStack.Get("main"), "", true);
             /*}
             catch (Exception ex)
             {

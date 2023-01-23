@@ -1,18 +1,23 @@
-program posneg;
-var 
- no : integer;
+program exFunction;
+var
+   a, b, ret : integer;
+type re = array[1..10, 1..5] of string;
+function max(num1, num2: integer): integer;
+var
+   result: integer;
+
 begin
-  Write('Enger a number:');
-  readln(no);
+   if (num1 > num2) then
+      result := num1
+   
+   else
+      result := num2;
+   max := result;
+end;
 
-  if (no > 0) then
-   writeln('You enter Positive Number')
-  else
-    if (no < 0) then
-     writeln('You enter Negative number')
-    else
-      if (no = 0) then
-      writeln('You enter Zero');
-
-  readln;
- end.
+begin
+   a := 100;
+   b := 200;
+   ret := max(a, b);
+   writeln( 'Max value is : ', ret );
+end.

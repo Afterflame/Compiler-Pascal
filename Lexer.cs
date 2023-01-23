@@ -7,7 +7,7 @@ using static Compiler.Program;
 
 namespace Compiler
 {
-    internal class Lexer
+    public class Lexer
     {
         public Lexem Token;
         public enum State
@@ -101,20 +101,16 @@ namespace Compiler
         class LexerStateBackUp
         {
             public Lexem Token { get; private set; }
-            public int Idx { get; private set; }
-            public int Line { get; private set; }
             public int it { get; private set; }
-            public int idx { get; private set; }
-            public int line { get; private set; }
+            public int curIdx { get; private set; }
+            public int curLine { get; private set; }
 
-            public LexerStateBackUp(Lexem token, int Idx, int Line, int it, int idx, int line)
+            public LexerStateBackUp(Lexem token, int it, int curIdx, int curLine)
             {
                 Token = token;
-                this.Idx = Idx;
-                this.Line = Line;
                 this.it = it;
-                this.idx = idx;
-                this.line = line;
+                this.curIdx = curIdx;
+                this.curLine = curLine;
             }
         }
         LexerStateBackUp backUp;
@@ -132,8 +128,8 @@ namespace Compiler
         object exitValue;
         Lexem.Types exitType;
         int it;
-        int idx;
-        int line;
+        int curIdx;
+        int curLine;
 
         public Lexer(string s)
         {
@@ -144,8 +140,8 @@ namespace Compiler
             specialSymbolData = new Lexem.SpecialSymbolData();
             this.fileText = s;
             it = 0;
-            idx = 1;
-            line = 1;
+            curIdx = 1;
+            curLine = 1;
             currentStates = new HashSet<State>();
             validExits = new Dictionary<State, Action>()
             {
@@ -774,7 +770,7 @@ namespace Compiler
 
                 while (fileText[it] == '\r')
                 {
-                    idx++;
+                    curIdx++;
                     it++;
                 }
                 if (fileText[it] >= '0' && fileText[it] <= '9')
@@ -796,7 +792,7 @@ namespace Compiler
                 else
                 if (fileText[it] > 127)
                 {
-                    throw new Exception(ErrorConstructor.GetPositionMassage(line, idx, Error.UnknownSymbol));
+                    throw new Exception(ErrorConstructor.GetPositionMassage(curLine, curIdx, Error.UnknownSymbol));
                 }
                 else
                     switch (fileText[it])
@@ -896,19 +892,41 @@ namespace Compiler
         }
         public void SaveState()
         {
-            backUp = new LexerStateBackUp(Token, Idx, Line, it, idx, line);
+            backUp = new LexerStateBackUp(Token, it, curIdx, curLine);
         }
         public void RestoreState()
         {
             Token = backUp.Token;
-            Idx = backUp.Idx;
-            Line = backUp.Line;
             it = backUp.it;
-            idx = backUp.idx;
-            line = backUp.line;
+            curIdx = backUp.curIdx;
+            curLine = backUp.curLine;
+        }
+        class LastExit
+        {
+            int curIdx;
+            int curLine;
+            int it;
+            Lexem ans;
+            public LastExit(int curIdx, int curLine, int it, Lexem ans = null)
+            {
+                this.curIdx = curIdx;
+                this.curLine = curLine;
+                this.it = it;
+                this.ans = ans;
+            }
+            public Lexem ReturnAns(ref int mainCurIdx, ref int mainCurLine, ref int mainCurIt, int startIdx, int startLine)
+            {
+                if((startIdx == curIdx && startLine == curLine && (!ans.Value.Equals(Lexem.SpecialSymbol.EOF))) || ans == null)
+                    throw new Exception(ErrorConstructor.GetPositionMassage(startIdx, startIdx, Error.InvalidSymbol));
+                mainCurIdx = curIdx;
+                mainCurLine = curLine;
+                mainCurIt = it;
+                return ans;
+            }
         }
         private Lexem GetNextToken()
         {
+
             uIntData = new Lexem.UIntData();
             uRealData = new Lexem.URealData();
             literalData = new Lexem.LiteralData();
@@ -916,9 +934,10 @@ namespace Compiler
             specialSymbolData = new Lexem.SpecialSymbolData();
             specialSymbolData = new Lexem.SpecialSymbolData();
             int start = it;
-            Idx = idx;
-            Line = line;
+            Idx = curIdx;
+            Line = curLine;
             Lexem ans = null;
+            LastExit lastExit = new LastExit(curIdx, curLine, it);
             currentStates.Add(State.Start);
             while (currentStates.Count > 0)
             {
@@ -976,19 +995,18 @@ namespace Compiler
                 {
                     if (fileText[it] == '\n')
                     {
-                        line++;
-                        idx = 1;
+                        curLine++;
+                        curIdx = 1;
                     }
                     else
                     {
-                        idx++;
+                        curIdx++;
                     }
                     it++;
                 }
+                if (ans != null) lastExit = new LastExit(curIdx, curLine, it, ans);
             }
-            if (ans != null) return ans;
-            else
-                throw new Exception(ErrorConstructor.GetPositionMassage(line, idx, Error.InvalidSymbol));
+            return lastExit.ReturnAns(ref curIdx, ref curLine, ref it, Idx, Line);
         }
     }
 }

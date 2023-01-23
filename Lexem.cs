@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Compiler
 {
 
-    internal class Lexem
+    public class Lexem
     {
         public enum Types
         {
@@ -99,11 +99,11 @@ namespace Compiler
         {
             private decimal value = 0;
             private int c_base = 10;
-            public decimal Value
+            public int Value
             {
                 get
                 {
-                    return value;
+                    return Decimal.ToInt32(value);
                 }
             }
             public void AddDigit(int a)
@@ -183,10 +183,11 @@ namespace Compiler
         public class IdentifierData
         {
             string value = "";
-            public string Value { get { return value; } }
+            public string Value { get { return value.ToUpper(); } }
             public void AddChar(char ch)
             {
                 value += ch;
+                value = value.ToUpper();
             }
         }
         public class SpecialSymbolData
