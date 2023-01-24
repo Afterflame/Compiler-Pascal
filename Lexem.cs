@@ -242,9 +242,9 @@ namespace Compiler
         public string Write()
         {
             if (Input == null || Input.Length == 0)
-                return Line.ToString() + " " + Index.ToString() + " " + Type.ToString() + " " + Value.ToString();
+                return String.Format("{0,5}{1,5}{2,15}{3,40}", Line.ToString(), Index.ToString(), Type.ToString(), Value.ToString());
             else
-                return Line.ToString() + " " + Index.ToString() + " " + Type.ToString() + " " + Value.ToString() + " " + Input.ToString();
+                return String.Format("{0,5}{1,5}{2,15}{3,40}{4,40}", Line.ToString(), Index.ToString(), Type.ToString(), Value.ToString(), Input.ToString());
         }
     }
 }

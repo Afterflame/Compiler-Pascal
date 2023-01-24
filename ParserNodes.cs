@@ -116,7 +116,7 @@ namespace Compiler
             }
             public override string GetStrVal()
             {
-                return "ProcedureDecl";
+                return String.Format("{0} : Function", proc.name);
             }
             public ProcedureDeclNode(SymProc proc)
             {
@@ -133,7 +133,7 @@ namespace Compiler
             }
             public override string GetStrVal()
             {
-                return "FunctionDecl";
+                return String.Format("{0} : Function", func.name);
             }
             public FunctionDeclNode(SymFunc func)
             {

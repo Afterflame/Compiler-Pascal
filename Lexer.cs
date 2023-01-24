@@ -442,8 +442,8 @@ namespace Compiler
                 {
                     if (ch >= '0' && ch <= '9')
                         uIntData.AddDigit(ch - '0');
-                    if (ch >= 'a' && ch <= 'f')
-                        uIntData.AddDigit(ch - 'a');
+                    if (ch >= 'a' && ch <= 'f' || ch >= 'A' && ch <= 'F')
+                        uIntData.AddDigit(Math.Min(Math.Abs(ch - 'a'), Math.Abs(ch - 'A')));
                 }));
                 //Float_dot
                 {
@@ -636,6 +636,11 @@ namespace Compiler
                         currentStates.Add(State.Comment_slash_end);
                         currentStates.Remove(State.Comment_slash);
                     }));
+                    lexerFSM[State.Comment_slash].Add(Event.EOF, new Action<char>((ch) =>
+                    {
+                        currentStates.Add(State.Comment_slash_end);
+                        currentStates.Remove(State.Comment_slash);
+                    }));
                     //runtime fill
                 }
                 //Comment_double_preend
@@ -726,7 +731,7 @@ namespace Compiler
             }
             foreach (Event e in (Event[])Enum.GetValues(typeof(Event)))
             {
-                if (e != Event.HexNumber && e != Event.E)
+                if (e != Event.HexNumber && e != Event.E && e!=Event.EOF)
                 {
                     if (e != Event.Asterisk)
                         lexerFSM[State.Comment_double][e] = new Action<char>((ch) => { });
@@ -918,7 +923,7 @@ namespace Compiler
                 this.ans = ans;
             }
             public Lexem ReturnAns(ref int mainCurIdx, ref int mainCurLine, ref int mainCurIt, int startIdx, int startLine, ref string fileText)
-            {
+           {
                 if(ans is null || (startIdx == curIdx && startLine == curLine && (!ans.Value.Equals(Lexem.SpecialSymbol.EOF))))
                     throw new Exception(ErrorConstructor.GetPositionMassage(startLine, startIdx, Error.InvalidSymbol));
                 mainCurIdx = curIdx;
@@ -954,6 +959,7 @@ namespace Compiler
                         {
                             acts.Add(new Tuple<Action<char>, char, State>(lexerFSM[st][ev], fileText.Length == it ? ' ' : fileText[it], st));
                         }
+
                     }
                 }
                 foreach (State st in currentStates)
@@ -986,7 +992,7 @@ namespace Compiler
                             input = fileText.Substring(start, it - start + 1);
                         else
                             input = null;
-                        if(exitType==Lexem.Types.Identifier && Enum.IsDefined(typeof(Lexem.KeyWord), exitValue.ToString().ToUpper()))
+                        if (exitType==Lexem.Types.Identifier && Enum.IsDefined(typeof(Lexem.KeyWord), exitValue.ToString().ToUpper()))
                         {
                             exitType=Lexem.Types.KeyWord;
                             exitValue = (Lexem.KeyWord)Enum.Parse(typeof(Lexem.KeyWord), exitValue.ToString().ToUpper());
@@ -994,7 +1000,7 @@ namespace Compiler
                         ans = new Lexem(start, Line, Idx, exitType, exitValue, input);
                     }
                 }
-                if (currentStates.Count > 0 && currentStates.Last() != State.EOF)
+                if (currentStates.Count > 0 && evs.Last() != Event.EOF)
                 {
                     if (fileText[it] == '\n')
                     {

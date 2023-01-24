@@ -7,12 +7,10 @@ using static Compiler.Program;
 
 namespace Compiler
 {
-
-    public partial class SimpleParser
-    {
+    public partial class SimpleParser {
         public abstract class Node
         {
-            public abstract string getStrVal();
+            public abstract string getVal();
             public abstract List<Node> GetChildren();
         }
 
@@ -24,7 +22,7 @@ namespace Compiler
             {
                 return new List<Node> { heading, body };
             }
-            public override string getStrVal()
+            public override string getVal()
             {
                 return "Programm";
             }
@@ -42,7 +40,7 @@ namespace Compiler
             {
                 return new List<Node> { identifier };
             }
-            public override string getStrVal()
+            public override string getVal()
             {
                 return "Heading";
             }
@@ -51,8 +49,6 @@ namespace Compiler
                 this.identifier = identifier;
             }
         }
-
-
         public class ConstDefinitionNode : Node
         {
             Node identifier;
@@ -61,7 +57,7 @@ namespace Compiler
             {
                 return new List<Node> { identifier, value };
             }
-            public override string getStrVal()
+            public override string getVal()
             {
                 return "ConstDef";
             }
@@ -79,7 +75,7 @@ namespace Compiler
             {
                 return new List<Node> { identifier, value };
             }
-            public override string getStrVal()
+            public override string getVal()
             {
                 return "ConstDef";
             }
@@ -96,7 +92,7 @@ namespace Compiler
             {
                 return new List<Node> { args };
             }
-            public override string getStrVal()
+            public override string getVal()
             {
                 return "ProcedureType";
             }
@@ -113,7 +109,7 @@ namespace Compiler
             {
                 return new List<Node> { args, resultType };
             }
-            public override string getStrVal()
+            public override string getVal()
             {
                 return "FunctionType";
             }
@@ -131,7 +127,7 @@ namespace Compiler
             {
                 return new List<Node> { listVariableDecls };
             }
-            public override string getStrVal()
+            public override string getVal()
             {
                 return "VariableDeclPart";
             }
@@ -148,7 +144,7 @@ namespace Compiler
             {
                 return new List<Node> { identifier, type };
             }
-            public override string getStrVal()
+            public override string getVal()
             {
                 return "VariableDecl";
             }
@@ -168,7 +164,7 @@ namespace Compiler
             {
                 return new List<Node> { identifier, fParameterList, block };
             }
-            public override string getStrVal()
+            public override string getVal()
             {
                 return "ProcedureDecl";
             }
@@ -190,7 +186,7 @@ namespace Compiler
             {
                 return new List<Node> { identifier, fParameterList, resultType, block };
             }
-            public override string getStrVal()
+            public override string getVal()
             {
                 return "FunctionDecl";
             }
@@ -209,7 +205,7 @@ namespace Compiler
             {
                 return new List<Node> { list };
             }
-            public override string getStrVal()
+            public override string getVal()
             {
                 return "LabelDecl";
             }
@@ -228,7 +224,7 @@ namespace Compiler
             {
                 return new List<Node> { identifierList, type };
             }
-            public override string getStrVal()
+            public override string getVal()
             {
                 return "FParameterGroup" + (isVar ? ", var" : "");
             }
@@ -248,7 +244,7 @@ namespace Compiler
             {
                 return children;
             }
-            public override string getStrVal()
+            public override string getVal()
             {
                 return "List " + type.ToString();
             }
@@ -258,7 +254,6 @@ namespace Compiler
                 this.children = children;
             }
         }
-
         public class BlockNode : Node
         {
             Node declarations;
@@ -267,7 +262,7 @@ namespace Compiler
             {
                 return new List<Node> { declarations, body };
             }
-            public override string getStrVal()
+            public override string getVal()
             {
                 return "Block";
             }
@@ -284,7 +279,7 @@ namespace Compiler
             {
                 return new List<Node> { };
             }
-            public override string getStrVal()
+            public override string getVal()
             {
                 return ((char)lexem.Value).ToString();
             }
@@ -300,7 +295,7 @@ namespace Compiler
             {
                 return new List<Node> { value };
             }
-            public override string getStrVal()
+            public override string getVal()
             {
                 return "UConst";
             }
@@ -317,7 +312,7 @@ namespace Compiler
             {
                 return new List<Node> { value };
             }
-            public override string getStrVal()
+            public override string getVal()
             {
                 return "Const" + (sign > 0 ? "+" : "-");
             }
@@ -327,17 +322,13 @@ namespace Compiler
                 this.sign = sign;
             }
         }
-
-        //statements
-        public abstract class StatementNode : Node
-        { }
-        public class EmptyStatementNode : StatementNode
+        public class EmptyStatementNode : Node
         {
             public override List<Node> GetChildren()
             {
                 return new List<Node> { };
             }
-            public override string getStrVal()
+            public override string getVal()
             {
                 return "EmptyStatement";
             }
@@ -345,7 +336,7 @@ namespace Compiler
             {
             }
         }
-        public class LabelStatementNode : StatementNode
+        public class LabelStatementNode : Node
         {
             Node label;
             Node statement;
@@ -353,7 +344,7 @@ namespace Compiler
             {
                 return new List<Node> { label, statement };
             }
-            public override string getStrVal()
+            public override string getVal()
             {
                 return "LabelStatementNode";
             }
@@ -363,7 +354,7 @@ namespace Compiler
                 this.statement = statement;
             }
         }
-        public class ForStatementNode : StatementNode
+        public class ForStatementNode : Node
         {
             Node identifier;
             Node initial;
@@ -374,7 +365,7 @@ namespace Compiler
             {
                 return new List<Node> { identifier, initial, final, statement };
             }
-            public override string getStrVal()
+            public override string getVal()
             {
                 return "ForStatementNode " + direction;
             }
@@ -387,7 +378,7 @@ namespace Compiler
                 this.direction = direction;
             }
         }
-        public class WhileStatementNode : StatementNode
+        public class WhileStatementNode : Node
         {
             Node condition;
             Node statement;
@@ -395,7 +386,7 @@ namespace Compiler
             {
                 return new List<Node> { condition, statement };
             }
-            public override string getStrVal()
+            public override string getVal()
             {
                 return "WhileStatementNode";
             }
@@ -405,7 +396,7 @@ namespace Compiler
                 this.statement = statement;
             }
         }
-        public class IfStatementNode : StatementNode
+        public class IfStatementNode : Node
         {
             Node condition;
             Node statement;
@@ -414,18 +405,18 @@ namespace Compiler
             {
                 return new List<Node> { condition, statement, altStatement };
             }
-            public override string getStrVal()
+            public override string getVal()
             {
-                return "IfStatementNode";
+                return "WhileStatementNode";
             }
-            public IfStatementNode(Node condition, Node statement, Node altStatement = null)
+            public IfStatementNode(Node condition, Node statement, Node altStatement)
             {
                 this.condition = condition;
                 this.statement = statement;
                 this.altStatement = altStatement;
             }
         }
-        public class RepeatStatementNode : StatementNode
+        public class RepeatStatementNode : Node
         {
             Node condition;
             Node statements;
@@ -433,7 +424,7 @@ namespace Compiler
             {
                 return new List<Node> { condition, statements };
             }
-            public override string getStrVal()
+            public override string getVal()
             {
                 return "RepetetiveStatement";
             }
@@ -443,7 +434,7 @@ namespace Compiler
                 this.statements = statements;
             }
         }
-        public class WithStatementNode : StatementNode
+        public class WithStatementNode : Node
         {
             Node recordVarList;
             Node statement;
@@ -451,7 +442,7 @@ namespace Compiler
             {
                 return new List<Node> { recordVarList, statement };
             }
-            public override string getStrVal()
+            public override string getVal()
             {
                 return "WithStatement";
             }
@@ -461,25 +452,25 @@ namespace Compiler
                 this.statement = statement;
             }
         }
-        public class AssignStatementNode : StatementNode
+        public class AssignStatementNode : Node
         {
-            Node left;
-            Node right;
+            Node to;
+            Node from;
             public override List<Node> GetChildren()
             {
-                return new List<Node> { left, right };
+                return new List<Node> { to, from };
             }
-            public override string getStrVal()
+            public override string getVal()
             {
                 return "AssignStatement";
             }
-            public AssignStatementNode(Node left, Node right)
+            public AssignStatementNode(Node to, Node from)
             {
-                this.left = left;
-                this.right = right;
+                this.to = to;
+                this.from = from;
             }
         }
-        public class ProcedureStatementNode : StatementNode
+        public class ProcedureStatementNode : Node
         {
             Node identifier;
             Node parameterList;
@@ -487,7 +478,7 @@ namespace Compiler
             {
                 return new List<Node> { identifier, parameterList };
             }
-            public override string getStrVal()
+            public override string getVal()
             {
                 return "ProcedureStatement";
             }
@@ -495,42 +486,6 @@ namespace Compiler
             {
                 this.identifier = identifier;
                 this.parameterList = parameterList;
-            }
-        }
-        public class ArrayAccessNode : Node
-        {
-            public Node left;
-            public Node right;
-            public override List<Node> GetChildren()
-            {
-                return new List<Node> { left, right };
-            }
-            public override string getStrVal()
-            {
-                return "ArrayAccess";
-            }
-            public ArrayAccessNode(Node left, Node right)
-            {
-                this.left = left;
-                this.right = right;
-            }
-        }
-        public class RecordAccessNode : Node
-        {
-            public Node left;
-            public Node right;
-            public override List<Node> GetChildren()
-            {
-                return new List<Node> { left, right };
-            }
-            public override string getStrVal()
-            {
-                return "RecordAccess";
-            }
-            public RecordAccessNode(Node left, Node right)
-            {
-                this.left = left;
-                this.right = right;
             }
         }
         public class FunctionDesignatorNode : Node
@@ -541,7 +496,7 @@ namespace Compiler
             {
                 return new List<Node> { identifier, parameterList };
             }
-            public override string getStrVal()
+            public override string getVal()
             {
                 return "FuncDesignator";
             }
@@ -558,7 +513,7 @@ namespace Compiler
             {
                 return parameters;
             }
-            public override string getStrVal()
+            public override string getVal()
             {
                 return "Parameters";
             }
@@ -576,7 +531,7 @@ namespace Compiler
             {
                 return new List<Node> { left, right };
             }
-            public override string getStrVal()
+            public override string getVal()
             {
                 //FIX
                 switch (op.Value)
@@ -602,7 +557,7 @@ namespace Compiler
         }
         public class RelationalOp : BinOpNode
         {
-            public override string getStrVal()
+            public override string getVal()
             {
                 switch (op.Value)
                 {
@@ -627,7 +582,7 @@ namespace Compiler
         }
         public class MultiplicativeOp : BinOpNode
         {
-            public override string getStrVal()
+            public override string getVal()
             {
                 switch (op.Value)
                 {
@@ -649,7 +604,7 @@ namespace Compiler
         }
         public class AdditiveOp : BinOpNode
         {
-            public override string getStrVal()
+            public override string getVal()
             {
                 switch (op.Value)
                 {
@@ -665,15 +620,13 @@ namespace Compiler
             }
             public AdditiveOp(Lexem op, Node left, Node right) : base(op, left, right) { }
         }
-
-
         public class SignedFactorNode : Node
         {
             Node value;
             int sign;
-            public override string getStrVal()
+            public override string getVal()
             {
-                return String.Format("Signed Factor({0})", sign > 0 ? "+" : "-");
+                return sign > 0 ? "+" : "-";
             }
             public SignedFactorNode(int sign, Node value)
             {
@@ -689,24 +642,26 @@ namespace Compiler
         {
             bool isRef;
             Node identifier;
-            public override string getStrVal()
+            Node args;
+            public override string getVal()
             {
-                return (isRef ? "Ref var" : "var");
+                return (isRef ? "Ref var " : "var ") + identifier.getVal();
             }
-            public VariableNode(bool isRef, Node identifier)
+            public VariableNode(bool isRef, Node identifier, Node args = null)
             {
                 this.isRef = isRef;
                 this.identifier = identifier;
+                this.args = args;
             }
             public override List<Node> GetChildren()
             {
-                return new List<Node> { identifier };
+                return new List<Node> { identifier, args };
             }
         }
         public class IdentifierNode : Node
         {
             public Lexem lexem;
-            public override string getStrVal()
+            public override string getVal()
             {
                 return lexem.Value.ToString();
             }
@@ -722,7 +677,7 @@ namespace Compiler
         public class NotFactorNode : Node
         {
             Node value;
-            public override string getStrVal()
+            public override string getVal()
             {
                 return "NOT";
             }
@@ -738,7 +693,7 @@ namespace Compiler
         public class NumberNode : Node
         {
             public Lexem lexem;
-            public override string getStrVal()
+            public override string getVal()
             {
                 return lexem.Value.ToString();
             }
@@ -754,7 +709,7 @@ namespace Compiler
         public class StringNode : Node
         {
             public Lexem lexem;
-            public override string getStrVal()
+            public override string getVal()
             {
                 return lexem.Value.ToString();
             }
@@ -770,7 +725,7 @@ namespace Compiler
         public class BoolNode : Node
         {
             public bool value;
-            public override string getStrVal()
+            public override string getVal()
             {
                 return value.ToString();
             }
@@ -785,7 +740,7 @@ namespace Compiler
         }
         public class NILNode : Node
         {
-            public override string getStrVal()
+            public override string getVal()
             {
                 return "NIL";
             }
@@ -797,7 +752,7 @@ namespace Compiler
         public class SetNode : Node
         {
             List<Node> children;
-            public override string getStrVal()
+            public override string getVal()
             {
                 return "Set";
             }
@@ -817,7 +772,7 @@ namespace Compiler
             {
                 return new List<Node>() { recordList };
             }
-            public override string getStrVal()
+            public override string getVal()
             {
                 return "RecordList";
             }
@@ -833,7 +788,7 @@ namespace Compiler
             {
                 return new List<Node>() { identifierList };
             }
-            public override string getStrVal()
+            public override string getVal()
             {
                 return "ScalarType";
             }
@@ -850,7 +805,7 @@ namespace Compiler
             {
                 return new List<Node>() { initial, final };
             }
-            public override string getStrVal()
+            public override string getVal()
             {
                 return "SubrangeType";
             }
@@ -867,7 +822,7 @@ namespace Compiler
             {
                 return new List<Node>() { value };
             }
-            public override string getStrVal()
+            public override string getVal()
             {
                 return "StringType";
             }
@@ -878,18 +833,20 @@ namespace Compiler
         }
         public class TypeIdentifierNode : Node
         {
-            public string value;
+            public object value;
+            public Node child;
             public override List<Node> GetChildren()
             {
-                return new List<Node>() { };
+                return new List<Node>() { child };
             }
-            public override string getStrVal()
+            public override string getVal()
             {
                 return value.ToString();
             }
-            public TypeIdentifierNode(string value)
+            public TypeIdentifierNode(object value, Node child = null)
             {
                 this.value = value;
+                this.child = child;
             }
         }
         public class ArrayTypeNode : Node
@@ -900,7 +857,7 @@ namespace Compiler
             {
                 return new List<Node>() { conponentType, typeList };
             }
-            public override string getStrVal()
+            public override string getVal()
             {
                 return "ArrayType";
             }
@@ -918,7 +875,7 @@ namespace Compiler
             {
                 return new List<Node> { left, right };
             }
-            public override string getStrVal()
+            public override string getVal()
             {
                 return "Element";
             }
@@ -935,7 +892,7 @@ namespace Compiler
             {
                 return new List<Node>() { fixedP };
             }
-            public override string getStrVal()
+            public override string getVal()
             {
                 return "FieldList";
             }
@@ -952,7 +909,7 @@ namespace Compiler
             {
                 return new List<Node>() { identifiers, type };
             }
-            public override string getStrVal()
+            public override string getVal()
             {
                 return "RecordSection";
             }

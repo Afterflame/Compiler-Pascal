@@ -31,8 +31,8 @@ namespace Compiler
             {
                 symTableStack.Add(item);
             }
-            symTableStack.Add(new SymProc("READ", new SymTable(symTableStack.Get("STRING")), null, new CompoundStatementNode(new List<Node>())));
-            symTableStack.Add(new SymProc("WRITE", new SymTable(symTableStack.Get("STRING")), null, new CompoundStatementNode(new List<Node>())));
+            symTableStack.Add(new SymProc("READ", new SymTable(new SymVar("internal", symTableStack.Get("STRING").AsType())), null, new CompoundStatementNode(new List<Node>())));
+            symTableStack.Add(new SymProc("WRITE", new SymTable(new SymVar("internal", symTableStack.Get("STRING").AsType())), null, new CompoundStatementNode(new List<Node>())));
         }
         public static void PrintNodeTree(Node tree, string indent, bool last)
         {
@@ -158,14 +158,11 @@ namespace Compiler
             switch (lexer.Token.Value)
             {
                 case Lexem.KeyWord.TYPE:
-                    ParseTypeDefinition();
-                    return new List<Node>() { new TypeDefinitionNode() };
+                    return ParseTypeDefinition ();
                 case Lexem.KeyWord.LABEL:
-                    ParseLabelDecl();
-                    return new List<Node>() { new LabelDeclNode() };
+                    return ParseLabelDecl();
                 case Lexem.KeyWord.VAR:
-                    ParseVariableDecl();
-                    return new List<Node>() { new VariableDeclNode() };
+                    return ParseVariableDecl();
                 case Lexem.KeyWord.CONST:
                     return ParseConstDecl();
                 case Lexem.KeyWord.PROCEDURE:
@@ -227,12 +224,14 @@ namespace Compiler
             }
             throw new ArgumentException(ErrorConstructor.GetPositionMassage(lexer.Line, lexer.Idx, Error.XExpexted, "UConstatant"));
         }
-        public void ParseVariableDecl()
+        public List<Node> ParseVariableDecl()
         {
             Require_KeyWord(Lexem.KeyWord.VAR);
+            List<Node> list = new List<Node>();
             while (lexer.Token.Type == Lexem.Types.Identifier)
             {
                 var identifierList = ParseIdentifierList();
+                list.AddRange(identifierList);
                 Require_Special(Lexem.SpecialSymbol.Colon, ":");
                 var type = ParseType();
                 foreach (var identifier in identifierList)
@@ -241,8 +240,11 @@ namespace Compiler
                 }
                 Require_Special(Lexem.SpecialSymbol.Semicolon, ";");
             }
+            if(list.Count==0)
+                throw new ArgumentException(ErrorConstructor.GetPositionMassage(lexer.Line, lexer.Idx, Error.XExpexted, "Variable"));
+            return list;
         }
-        public void ParseLabelDecl()
+        public List<Node> ParseLabelDecl()
         {
             Require_KeyWord(Lexem.KeyWord.LABEL);
 
@@ -250,16 +252,18 @@ namespace Compiler
                 throw new ArgumentException(ErrorConstructor.GetPositionMassage(lexer.Line, lexer.Idx, Error.XExpexted, "UInt"));
             symTableStack.Add(new SymLabel(lexer.Token.Value.ToString()));
             lexer.NextToken();
-
+            List<Node> list = new List<Node>();
             while (lexer.Token.Value.Equals(Lexem.SpecialSymbol.Comma))
             {
                 lexer.NextToken();
                 if (lexer.Token.Type != Lexem.Types.UInteger)
                     throw new ArgumentException(ErrorConstructor.GetPositionMassage(lexer.Line, lexer.Idx, Error.XExpexted, "UInt"));
                 symTableStack.Add(new SymLabel(lexer.Token.Value.ToString()));
+                list.Add(new IntNode((int)lexer.Token.Value, symTableStack.Get("INTEGER").AsType()));
                 lexer.NextToken();
             }
             Require_Special(Lexem.SpecialSymbol.Semicolon, ";");
+            return list;
         }
         public Node ParseFunctionDecl()
         {
@@ -293,12 +297,12 @@ namespace Compiler
         }
         public Node ParseProcedureDecl()
         {
-            Require_KeyWord(Lexem.KeyWord.FUNCTION);
+            Require_KeyWord(Lexem.KeyWord.PROCEDURE);
             var identifier = ParseIdentifier();
             SymTable params_ = new SymTable();
             symTableStack.AddTable(params_);
             lexer.SaveState();
-            if (lexer.Token.Value.Equals(Lexem.SpecialSymbol.Semicolon))
+            if (lexer.Token.Value.Equals(Lexem.SpecialSymbol.LParenthese))
             {
                 ParseFParamenerList();
             }
@@ -313,18 +317,21 @@ namespace Compiler
             Require_Special(Lexem.SpecialSymbol.Semicolon, ";");
             return new ProcedureDeclNode(symProc);
         }
-        public void ParseTypeDefinition()
+        public List<Node> ParseTypeDefinition()
         {
             Require_KeyWord(Lexem.KeyWord.TYPE);
+            List<Node> list = new List<Node>();
             while (lexer.Token.Type == Lexem.Types.Identifier)
             {
                 var identifier = ParseIdentifier();
+                list.Add(identifier);
                 Require_Special(Lexem.SpecialSymbol.Equal, "=");
                 var type = ParseType();
                 type.name = identifier.value;
                 symTableStack.Add(type);
                 Require_Special(Lexem.SpecialSymbol.Semicolon, ";");
             }
+            return list;
         }
 
         public void ParseFParamenerList()

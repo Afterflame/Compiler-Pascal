@@ -22,7 +22,7 @@ namespace Compiler
         {
             data = new Dictionary<string, Symbol>();
             ordered = new List<Symbol>();
-            data.Add(symbol.name, symbol);
+            this.Add(symbol);
         }
         public int Count()
         {

@@ -26,7 +26,7 @@ namespace Compiler
         {
             public static string GetPositionMassage(int line, int idx, Error err, string arg1 = null, string arg2 = null)
             {
-                var msg="";
+                var msg = "";
                 switch (err)
                 {
                     case Error.CharRange:
@@ -59,7 +59,7 @@ namespace Compiler
                         msg = arg1 != null ? String.Format("\"{0}\" expected", arg1) : "X Expected, wrong arguments";
                         break;
                     case Error.XExpextedYGot:
-                        msg = (arg1 != null && arg2 != null) ? 
+                        msg = (arg1 != null && arg2 != null) ?
                             String.Format("\"{0}\" expected but \"{1}\" got", arg1 ?? "error", arg2) : "X Expected Y Got, wrong arguments";
                         break;
                     case Error.Custom:
@@ -72,7 +72,7 @@ namespace Compiler
                 return msg + " at " + line + " " + idx;
             }
         }
-        public static string fileText="";
+        public static string fileText = "";
         public static bool lexerOnly = false;
         public static bool expressionOnly = false;
         public static bool parserOnly = false;
@@ -82,7 +82,7 @@ namespace Compiler
             if (args == null || args.Length == 0)
             {
                 fileText = System.IO.File.ReadAllText(@"input.in");
-                parserOnly = true;
+                lexerOnly = true;
             }
             else
             {
@@ -98,39 +98,40 @@ namespace Compiler
         }
         public static void WriteLexems()
         {
-                Lexer lexer = new Lexer(fileText);
-                lexer.NextToken();
-                while (!lexer.Token.Value.Equals(Lexem.SpecialSymbol.EOF))
-                {
-                    Console.WriteLine(lexer.Token.Write());
-                    lexer.NextToken();
-                }
+            Lexer lexer = new Lexer(fileText);
+            lexer.NextToken();
+            while (!lexer.Token.Value.Equals(Lexem.SpecialSymbol.EOF))
+            {
                 Console.WriteLine(lexer.Token.Write());
+                lexer.NextToken();
+            }
+            Console.WriteLine(lexer.Token.Write());
         }
         public static void WriteExpression()
         {
-                Lexer lexer = new Lexer(fileText);
-                SimpleParser parser = new SimpleParser(ref lexer);
-                SimpleParser.Node exp = parser.ParseSimpleExpression();
-                if ((!lexer.Token.Value.Equals(Lexem.SpecialSymbol.EOF) || !lexer.Token.Value.Equals(Lexem.SpecialSymbol.EOL)))
-                    throw new Exception(ErrorConstructor.GetPositionMassage(lexer.Line, lexer.Idx, Error.UnexpectedSymbol));
-                SimpleParser.PrintNodeTree(exp, "", true);
-                SimpleParser.PrintNodeTree(exp, "", true);
+            Lexer lexer = new Lexer(fileText);
+            SimpleParser parser = new SimpleParser(ref lexer);
+            SimpleParser.Node exp = parser.ParseSimpleExpression();
+            if ((!lexer.Token.Value.Equals(Lexem.SpecialSymbol.EOF) || !lexer.Token.Value.Equals(Lexem.SpecialSymbol.EOL)))
+                throw new Exception(ErrorConstructor.GetPositionMassage(lexer.Line, lexer.Idx, Error.UnexpectedSymbol));
+            SimpleParser.PrintNodeTree(exp, "", true);
+            SimpleParser.PrintNodeTree(exp, "", true);
         }
         public static void ParseTree()
         {
-                Lexer lexer = new Lexer(fileText);
-                SimpleParser parser = new SimpleParser(ref lexer);
-                SimpleParser.Node exp = parser.ParseProgramm();
-                SimpleParser.PrintNodeTree(exp, "", true);
+            Lexer lexer = new Lexer(fileText);
+            Parser parser = new Parser  (ref lexer);
+            Parser.Node exp = parser.ParseProgramm();
+            Parser.PrintNodeTree(exp, "", true);
         }
         public static void ParseTables()
         {
-                Lexer lexer = new Lexer(fileText);
-                Parser parser = new Parser(ref lexer);
-                Parser.Node exp = parser.ParseProgramm();
-                Parser.PrintNodeTree(exp, "", true);
-                Parser.PrintSymbolTable(parser.symTableStack.Get("main"), "", true);
+            Lexer lexer = new Lexer(fileText);
+            Parser parser = new Parser(ref lexer);
+            Parser.Node exp = parser.ParseProgramm();
+            Parser.PrintNodeTree(exp, "", true);
+            Console.WriteLine();
+            Parser.PrintSymbolTable(parser.symTableStack.Get("main"), "", true);
         }
 
         static void Main(string[] args)
