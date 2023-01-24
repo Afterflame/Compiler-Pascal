@@ -16,10 +16,12 @@ namespace Compiler
         public SymTable()
         {
             data = new Dictionary<string, Symbol>();
+            ordered = new List<Symbol>();
         }
         public SymTable(Symbol symbol)
         {
             data = new Dictionary<string, Symbol>();
+            ordered = new List<Symbol>();
             data.Add(symbol.name, symbol);
         }
         public int Count()
@@ -107,7 +109,7 @@ namespace Compiler
     public class SymVar : Symbol
     {
         public SymType type;
-        public override SymTable GetChildren() { return new SymTable(); }
+        public override SymTable GetChildren() { return new SymTable(type); }
 
         public SymVar(string name, SymType type) : base(name)
         {
