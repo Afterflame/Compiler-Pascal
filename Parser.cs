@@ -30,6 +30,8 @@ namespace Compiler
             {
                 symTableStack.Add(item);
             }
+            symTableStack.Add(new SymProc("READ", new SymTable(symTableStack.Get("STRING")), null, new CompoundStatementNode(new List<Node>())));
+            symTableStack.Add(new SymProc("WRITE", new SymTable(symTableStack.Get("STRING")), null, new CompoundStatementNode(new List<Node>())));
         }
         public static void PrintNodeTree(Node tree, string indent, bool last)
         {
@@ -50,7 +52,7 @@ namespace Compiler
             {
                 if (node == null)
                 {
-                    if(list.Last()==null)
+                    if (list.Last() == null)
                         PrintNodeTree(node, indent, true);
                     else
                         PrintNodeTree(node, indent, false);
@@ -208,18 +210,23 @@ namespace Compiler
             Require_KeyWord(Lexem.KeyWord.FUNCTION);
             var identifier = ParseIdentifier();
             SymTable params_ = new SymTable();
+            SymTable all_vars = new SymTable();
+            all_vars.Add(new SymVar(identifier.value, (SymType)symTableStack.Get("INTEGER")));
             symTableStack.AddTable(params_);
             lexer.SaveState();
             if (lexer.Token.Value.Equals(Lexem.SpecialSymbol.LParenthese))
             {
                 ParseFParamenerList();
             }
+            all_vars.AddRange(params_);
             Require_Special(Lexem.SpecialSymbol.Colon, ":");
             var type_ = ParseTypeIdentifier();
             Require_Special(Lexem.SpecialSymbol.Semicolon, ";");
             SymTable locals_ = new SymTable();
             symTableStack.AddTable(locals_);
             ParseLocals();
+            all_vars.AddRange(locals_);
+            locals_.Add(new SymVar(identifier.value, type_));
             var body = ParseCompoundStatement();
             var symFunc = new SymFunc(identifier.value, params_, locals_, type_, body);
             symTableStack.PopTable();
@@ -328,12 +335,13 @@ namespace Compiler
                 lexer.NextToken();
             }
             Node lastNode = ParseIdentifier();
-            Symbol lastSymbol = symTableStack.Get(((IdentifierNode)lastNode).value);
+            SymVar lastVar = (SymVar)symTableStack.Get(((IdentifierNode)lastNode).value);
+            SymType lastType = lastVar.type;
             while (lexer.Token.Value.Equals(Lexem.SpecialSymbol.LBracket) || lexer.Token.Value.Equals(Lexem.SpecialSymbol.Dot))
             {
                 if (lexer.Token.Value.Equals(Lexem.SpecialSymbol.LBracket))
                 {
-                    List<Node> list = new List<Node>();
+                    List<ExprNode> list = new List<ExprNode>();
                     lexer.NextToken();
                     list.Add(ParseExpression());
                     while (!lexer.Token.Value.Equals(Lexem.SpecialSymbol.RBracket))
@@ -346,20 +354,32 @@ namespace Compiler
                         }
                         throw new Exception(ErrorConstructor.GetPositionMassage(lexer.Line, lexer.Idx, Error.InvalidArgs));
                     }
-                    foreach (var access in list)
+                    for (int i = 0; i < list.Count(); i++)
                     {
-                        lastNode = new ArrayAccessNode(lastNode, access);
+                        if (i > 0)
+                            lastType = ((SymArray)lastType).type;
+                        try
+                        {
+                            lastNode = new ArrayAccessNode(lastNode, list[i], lastType);
+                        }
+                        catch
+                        {
+                            throw new Exception(ErrorConstructor.GetPositionMassage(lexer.Line, lexer.Idx, Error.InvalidArgs));
+                        }
                     }
                     lexer.NextToken();
                 }
                 if (lexer.Token.Value.Equals(Lexem.SpecialSymbol.Dot))
                 {
                     lexer.NextToken();
-                    lastNode = new RecordAccessNode(lastNode, ParseIdentifier());
+                    var identifier = ParseIdentifier();
+                    var type = ((SymVar)lastVar).type;
+                    lastNode = new RecordAccessNode((SymVar)lastVar, (SymVar)((SymRecord)type).fields.Get(identifier.value), type);
+                    lastVar = (SymVar)((SymRecord)type).fields.Get(identifier.value);
                 }
 
             }
-            return new VariableNode(isRef, lastNode);
+            return new VariableNode(isRef, lastNode, ((SymVar)lastVar).type);
         }
 
         //statements
@@ -391,13 +411,29 @@ namespace Compiler
                 Require_Special(Lexem.SpecialSymbol.Colon, ":");
             }
             Node statement;
-            try
+            switch (lexer.Token.Value)
             {
-                statement = ParseStructuredStatement();
-            }
-            catch
-            {
-                statement = ParseSimpleStatement();
+                case Lexem.KeyWord.BEGIN:
+                    statement = ParseCompoundStatement();
+                    break;
+                case Lexem.KeyWord.IF:
+                    statement = ParseIfStatement();
+                    break;
+                case Lexem.KeyWord.WITH:
+                    statement = ParseWithStatement();
+                    break;
+                case Lexem.KeyWord.FOR:
+                    statement = ParseForStatement();
+                    break;
+                case Lexem.KeyWord.WHILE:
+                    statement = ParseWhileStatement();
+                    break;
+                case Lexem.KeyWord.REPEAT:
+                    statement = ParseRepeatStatement();
+                    break;
+                default:
+                    statement = ParseSimpleStatement();
+                    break;
             }
             if (label != null)
                 return new LabelStatementNode(label, statement);
@@ -405,44 +441,13 @@ namespace Compiler
         }
         public Node ParseSimpleStatement()
         {
-            lexer.SaveState();
-            try
+            if (lexer.Token.Type == Lexem.Types.Identifier)
             {
+                if (symTableStack.Get(lexer.Token.Value.ToString()).GetType().Equals(typeof(SymProc)))
+                    return ParseProcedureStatement();
                 return ParseAssignStatement();
             }
-            catch
-            {
-                lexer.RestoreState();
-            }
-            try
-            {
-                return ParseProcedureStatement();
-            }
-            catch
-            {
-                lexer.RestoreState();
-            }
             return new EmptyStatementNode();
-        }
-        public Node ParseStructuredStatement()
-        {
-            switch (lexer.Token.Value)
-            {
-                case Lexem.KeyWord.BEGIN:
-                    return ParseCompoundStatement();
-                case Lexem.KeyWord.IF:
-                    return ParseIfStatement();
-                case Lexem.KeyWord.WITH:
-                    return ParseWithStatement();
-                case Lexem.KeyWord.FOR:
-                    return ParseForStatement();
-                case Lexem.KeyWord.WHILE:
-                    return ParseWhileStatement();
-                case Lexem.KeyWord.REPEAT:
-                    return ParseRepeatStatement();
-                default:
-                    throw new ArgumentException(ErrorConstructor.GetPositionMassage(lexer.Line, lexer.Idx, Error.XExpexted, "Relevant Keyword"));
-            }
         }
         public Node ParseIfStatement()
         {
@@ -512,12 +517,23 @@ namespace Compiler
             var expression = ParseExpression();
             return new RepeatStatementNode(expression, statements);
         }
+        public void AssignCast(AssignStatementNode stmtNode)
+        {
+            if(stmtNode.left.type == symTableStack.Get("REAL") && stmtNode.right.type == symTableStack.Get("INTEGER"))
+            {
+                stmtNode.right = new CastNode(stmtNode.right, stmtNode.left.type);
+            }
+            if(stmtNode.left.type!= stmtNode.right.type)
+                throw new Exception(ErrorConstructor.GetPositionMassage(lexer.Line, lexer.Idx, Error.InvalidTypes, stmtNode.left.type.name, stmtNode.right.type.name));
+        }
         public Node ParseAssignStatement()
         {
             var variable = ParseVariable();
             Require_Special(Lexem.SpecialSymbol.Assign, ":=");
             var expr = ParseExpression();
-            return new AssignStatementNode(variable, expr);
+            var node = new AssignStatementNode(variable, expr);
+            AssignCast(node);
+            return node;
         }
         public Node ParseProcedureStatement()
         {
@@ -533,6 +549,37 @@ namespace Compiler
         }
 
         //expression
+        public BinOpNode BinOpCast(BinOpNode binOp)
+        {
+            if (binOp.GetType().Equals(typeof(RelationalOp)))
+            {
+                if (binOp.left.type != symTableStack.Get("INTEGER") || binOp.left.type != symTableStack.Get("REAL") ||
+                    binOp.right.type != symTableStack.Get("INTEGER") || binOp.right.type != symTableStack.Get("REAL"))
+                    if (binOp.left.type != binOp.right.type)
+                        throw new Exception(ErrorConstructor.GetPositionMassage(lexer.Line, lexer.Idx, Error.InvalidTypes, binOp.left.type.name, binOp.right.type.name));
+
+
+                if (binOp.left.type == symTableStack.Get("INTEGER") || binOp.right.type == symTableStack.Get("REAL"))
+                    binOp.left = new CastNode(binOp.left, (SymType)symTableStack.Get("REAL"));
+                if (binOp.right.type == symTableStack.Get("INTEGER") || binOp.left.type == symTableStack.Get("REAL"))
+                    binOp.right = new CastNode(binOp.left, (SymType)symTableStack.Get("REAL"));
+                binOp.type = (SymType)symTableStack.Get("BOOLEAN");
+            }
+            if (binOp.GetType().Equals(typeof(AdditiveOp)) || binOp.GetType().Equals(typeof(MultiplicativeOp)))
+            {
+                if (binOp.left.type != symTableStack.Get("INTEGER") || binOp.left.type != symTableStack.Get("REAL"))
+                    throw new Exception(ErrorConstructor.GetPositionMassage(lexer.Line, lexer.Idx, Error.InvalidTypes, binOp.left.type.name, binOp.right.type.name));
+                if (binOp.right.type != symTableStack.Get("INTEGER") || binOp.right.type != symTableStack.Get("REAL"))
+                    throw new Exception(ErrorConstructor.GetPositionMassage(lexer.Line, lexer.Idx, Error.InvalidTypes, binOp.left.type.name, binOp.right.type.name));
+
+                if (binOp.left.type == symTableStack.Get("INTEGER") || binOp.right.type == symTableStack.Get("REAL"))
+                    binOp.left = new CastNode(binOp.left, (SymType)symTableStack.Get("REAL"));
+                if (binOp.right.type == symTableStack.Get("INTEGER") || binOp.left.type == symTableStack.Get("REAL"))
+                    binOp.right = new CastNode(binOp.left, (SymType)symTableStack.Get("REAL"));
+                binOp.type = binOp.right.type;
+            }
+            return binOp;
+        }
         public List<ExprNode> ParseParameterList()
         {
             List<ExprNode> parameterList = new List<ExprNode>();
@@ -551,7 +598,8 @@ namespace Compiler
             while (lex.Type == Lexem.Types.Relational_Op)
             {
                 lexer.NextToken();
-                left = new RelationalOp(lex, left, ParseSimpleExpression(), (SymInteger)symTableStack.Get("INTEGER"));
+                left = new RelationalOp(lex, left, ParseSimpleExpression(), null);
+                BinOpCast((BinOpNode)left);
                 lex = lexer.Token;
             }
             return left;
@@ -563,7 +611,8 @@ namespace Compiler
             while (lex.Type == Lexem.Types.Additive_Op)
             {
                 lexer.NextToken();
-                left = new AdditiveOp(lex, left, ParseTerm(), (SymInteger)symTableStack.Get("INTEGER"));
+                left = new AdditiveOp(lex, left, ParseTerm(), null);
+                BinOpCast((BinOpNode)left);
                 lex = lexer.Token;
             }
             return left;
@@ -575,7 +624,8 @@ namespace Compiler
             while (lex.Type == Lexem.Types.Multiplicative_Op)
             {
                 lexer.NextToken();
-                left = new MultiplicativeOp(lex, left, ParseSignedFactor(), (SymInteger)symTableStack.Get("INTEGER"));
+                left = new MultiplicativeOp(lex, left, ParseSignedFactor(), null);
+                BinOpCast((BinOpNode)left);
                 lex = lexer.Token;
             }
             return left;
@@ -601,7 +651,7 @@ namespace Compiler
             {
                 throw new ArgumentException(ErrorConstructor.GetPositionMassage(lexer.Line, lexer.Idx, Error.InvalidAction, sign > 0 ? "+" : "-"));
             }
-            return new SignedFactorNode(sign, factor, factor.type);
+            return new SignedFactorNode(sign == 0 ? 1 : sign, factor, factor.type);
         }
         public ExprNode ParseFactor()
         {
@@ -610,8 +660,8 @@ namespace Compiler
             {
                 lexer.NextToken();
                 var factor = ParseFactor();
-                if(factor.type!= symTableStack.Get("BOOLEAN"))
-                    throw new ArgumentException(ErrorConstructor.GetPositionMassage(lexer.Line, lexer.Idx, Error.InvalidAction,"NOT"));
+                if (factor.type != symTableStack.Get("BOOLEAN"))
+                    throw new ArgumentException(ErrorConstructor.GetPositionMassage(lexer.Line, lexer.Idx, Error.InvalidAction, "NOT"));
                 return new NotFactorNode(factor, factor.type);
             }
             if (lex.Value.Equals(Lexem.KeyWord.TRUE))
@@ -644,34 +694,12 @@ namespace Compiler
                     return new IntNode((int)lex.Value, (SymInteger)symTableStack.Get("INTEGER"));
 
                 case Lexem.Types.Identifier:
-                    lexer.SaveState();
-                    try
-                    {
+                    if (symTableStack.Get(lexer.Token.Value.ToString()).GetType().Equals(typeof(SymFunc)))
                         return ParseFunctionCall();
-                    }
-                    catch
-                    {
-                        lexer.RestoreState();
-                        try
-                        {
-                            return ParseVariable();
-                        }
-                        catch
-                        {
-                            lexer.RestoreState();
-                        }
-                    }
-                    throw new Exception(ErrorConstructor.GetPositionMassage(lexer.Line, lexer.Idx, Error.XExpexted, "Function or Variable"));
+                    return ParseVariable();
 
                 default:
-                    try
-                    {
-                        return ParseUConst();
-                    }
-                    catch
-                    {
-                        throw new Exception(ErrorConstructor.GetPositionMassage(lexer.Line, lexer.Idx, Error.XExpexted, "Factor"));
-                    }
+                    return ParseUConst();
             }
         }
         public ExprNode ParseFunctionCall()
@@ -681,11 +709,11 @@ namespace Compiler
             var list = ParseParameterList();
             Require_Special(Lexem.SpecialSymbol.RParenthese, ")");
             SymFunc func = (SymFunc)symTableStack.Get(identifier.value);
-            if(func.params_.Count() != list.Count())
+             if(func.params_.Count() != list.Count())
                 throw new Exception(ErrorConstructor.GetPositionMassage(lexer.Line, lexer.Idx, Error.InvalidArgs));
             for (int i=0; i< list.Count(); i++)
             {
-                if(list[i].type != func.params_.GetAt(i))
+                if(list[i].type != ((SymVar)func.params_.GetAt(i)).type)
                     throw new Exception(ErrorConstructor.GetPositionMassage(lexer.Line, lexer.Idx, Error.InvalidArgs));
             }
             return new FunctionCallNode(func, func.type_, list);

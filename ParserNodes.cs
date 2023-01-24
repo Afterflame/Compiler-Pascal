@@ -331,8 +331,8 @@ namespace Compiler
         }
         public class AssignStatementNode : StatementNode
         {
-            Node left;
-            Node right;
+            public ExprNode left;
+            public ExprNode right;
             public override List<Node> GetChildren()
             {
                 return new List<Node> { left, right };
@@ -341,7 +341,7 @@ namespace Compiler
             {
                 return "AssignStatement";
             }
-            public AssignStatementNode(Node left, Node right)
+            public AssignStatementNode(ExprNode left, ExprNode right)
             {
                 this.left = left;
                 this.right = right;
@@ -368,40 +368,40 @@ namespace Compiler
                 this.parameterList = parameterList;
             }
         }
-        public class ArrayAccessNode : Node
+        public class ArrayAccessNode : ExprNode
         {
-            public Node left;
-            public Node right;
+            public Node array;
+            public ExprNode element;
             public override List<Node> GetChildren()
             {
-                return new List<Node> { left, right };
+                return new List<Node> { element };
             }
             public override string getStrVal()
             {
                 return "ArrayAccess";
             }
-            public ArrayAccessNode(Node left, Node right)
+            public ArrayAccessNode(Node array, ExprNode element, SymType type) :base(type)
             {
-                this.left = left;
-                this.right = right;
+                this.array = array;
+                this.element = element;
             }
         }
-        public class RecordAccessNode : Node
+        public class RecordAccessNode : ExprNode
         {
-            public Node left;
-            public Node right;
+            public SymVar record;
+            public SymVar field;
             public override List<Node> GetChildren()
             {
-                return new List<Node> { left, right };
+                return new List<Node> { };
             }
             public override string getStrVal()
             {
-                return "RecordAccess";
+                return record.name;
             }
-            public RecordAccessNode(Node left, Node right)
+            public RecordAccessNode(SymVar record, SymVar field, SymType type) : base(type)
             {
-                this.left = left;
-                this.right = right;
+                this.record = record;
+                this.field = field;
             }
         }
         public class FunctionCallNode : ExprNode
@@ -453,8 +453,8 @@ namespace Compiler
         public abstract class BinOpNode : ExprNode
         {
             public Lexem op;
-            public Node left;
-            public Node right;
+            public ExprNode left;
+            public ExprNode right;
             public override List<Node> GetChildren()
             {
                 return new List<Node> { left, right };
@@ -476,7 +476,7 @@ namespace Compiler
 
                 return op.Value.ToString();
             }
-            public BinOpNode(Lexem op, Node left, Node right, SymType type) : base(type)
+            public BinOpNode(Lexem op, ExprNode left, ExprNode right, SymType type) : base(type)
             {
                 this.op = op;
                 this.left = left;
@@ -504,7 +504,7 @@ namespace Compiler
                 }
                 return op.Value.ToString();
             }
-            public RelationalOp(Lexem op, Node left, Node right, SymType type) : base(op, left, right, type) { }
+            public RelationalOp(Lexem op, ExprNode left, ExprNode right, SymType type) : base(op, left, right, type) { }
         }
         public class MultiplicativeOp : BinOpNode
         {
@@ -526,7 +526,7 @@ namespace Compiler
 
                 return op.Value.ToString();
             }
-            public MultiplicativeOp(Lexem op, Node left, Node right, SymType type) : base(op, left, right, type) { }
+            public MultiplicativeOp(Lexem op, ExprNode left, ExprNode right, SymType type) : base(op, left, right, type) { }
         }
         public class AdditiveOp : BinOpNode
         {
@@ -544,10 +544,25 @@ namespace Compiler
 
                 return op.Value.ToString();
             }
-            public AdditiveOp(Lexem op, Node left, Node right, SymType type) : base(op, left, right, type) { }
+            public AdditiveOp(Lexem op, ExprNode left, ExprNode right, SymType type) : base(op, left, right, type) { }
         }
 
-
+        public class CastNode : ExprNode
+        {
+            ExprNode expr;
+            public override string getStrVal()
+            {
+                return type.name;
+            }
+            public CastNode(ExprNode expr, SymType type) : base(type)
+            {
+                this.expr = expr;
+            }
+            public override List<Node> GetChildren()
+            {
+                return new List<Node> { expr };
+            }
+        }
         public class SignedFactorNode : ExprNode
         {
             Node value;

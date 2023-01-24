@@ -734,7 +734,7 @@ namespace Compiler
                         lexerFSM[State.Comment_curly][e] = new Action<char>((ch) => { });
                     if (e != Event.EOL)
                     {
-                        lexerFSM[State.Comment_curly][e] = new Action<char>((ch) => { });
+                        lexerFSM[State.Comment_slash][e] = new Action<char>((ch) => { });
                         if (e != Event.Quote)
                         {
                             lexerFSM[State.Literal_char][e] = new Action<char>((ch) =>

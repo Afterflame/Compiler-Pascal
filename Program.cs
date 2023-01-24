@@ -16,6 +16,7 @@ namespace Compiler
             InvalidSymbol,
             InvalidArgs,
             InvalidAction,
+            InvalidTypes,
             XExpexted,
             XExpextedYGot,
         }
@@ -43,6 +44,10 @@ namespace Compiler
                         break;
                     case Error.InvalidAction:
                         msg = arg1 != null ? String.Format("\"{0}\" action is not valid", arg1) : "Action is not valid, wrong arguments";
+                        break;
+                    case Error.InvalidTypes:
+                        msg = (arg1 != null && arg2 != null) ?
+                            String.Format("Operator does not support \"{0}\" and \"{1}\"", arg1 ?? "error", arg2) : "Operator does not support X and Y, wrong arguments";
                         break;
                     case Error.XExpexted:
                         msg = arg1 != null ? String.Format("\"{0}\" expected", arg1) : "X Expected, wrong arguments";
