@@ -1,0 +1,6 @@
+program p;
+var i, b:integer;
+begin
+while 1=1 do
+b:=i;
+end.

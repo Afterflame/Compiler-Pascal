@@ -1,2 +1,15 @@
-Identifier not found: "WRITELN"
+ Programm
+ цдд Heading
+ Ё   юдд P
+ цдд F : Function
+ Ё   юдд CompoundStatement
+ Ё       юдд EmptyStatement
+ юдд CompoundStatement
+     юдд EmptyStatement
+
+ main : SymProc
+ юдд F : SymFunc
+     цдд INTEGER : SymInteger
+     юдд F : SymVar
+         юдд INTEGER : SymInteger
 

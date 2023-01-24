@@ -1,7 +1,15 @@
  Programm
  цдд Heading
  Ё   юдд P
+ цдд A
  юдд CompoundStatement
+     цдд AssignStatement
+     Ё   цдд A : Var
+     Ё   юдд Signed Factor(+)
+     Ё       юдд 2
      юдд EmptyStatement
+
  main : SymProc
+ юдд A : SymVar
+     юдд INTEGER : SymInteger
 

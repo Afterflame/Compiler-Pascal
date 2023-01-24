@@ -1,0 +1,26 @@
+ Programm
+ цдд Heading
+ Ё   юдд P
+ цдд A
+ цдд F : Function
+ Ё   юдд CompoundStatement
+ Ё       юдд EmptyStatement
+ юдд CompoundStatement
+     цдд AssignStatement
+     Ё   цдд A : Var
+     Ё   юдд Signed Factor(+)
+     Ё       юдд F
+     Ё           юдд Signed Factor(+)
+     Ё               юдд 3
+     юдд EmptyStatement
+
+ main : SymProc
+ цдд A : SymVar
+ Ё   юдд STRING : SymString
+ юдд F : SymFunc
+     цдд STRING : SymString
+     цдд A : SymParam
+     Ё   юдд INTEGER : SymInteger
+     юдд F : SymVar
+         юдд STRING : SymString
+

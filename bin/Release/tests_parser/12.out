@@ -1,0 +1,18 @@
+ Programm
+ ÃÄÄ Heading
+ ³   ÀÄÄ P
+ ÃÄÄ I
+ ÃÄÄ B
+ ÀÄÄ CompoundStatement
+     ÃÄÄ WhileStatementNode
+     ³   ÃÄÄ =
+     ³   ³   ÃÄÄ Signed Factor(+)
+     ³   ³   ³   ÀÄÄ 1
+     ³   ³   ÀÄÄ Signed Factor(+)
+     ³   ³       ÀÄÄ 1
+     ³   ÀÄÄ AssignStatement
+     ³       ÃÄÄ B : Var
+     ³       ÀÄÄ Signed Factor(+)
+     ³           ÀÄÄ I : Var
+     ÀÄÄ EmptyStatement
+

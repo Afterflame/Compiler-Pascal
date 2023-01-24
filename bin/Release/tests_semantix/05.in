@@ -1,15 +1,6 @@
 program p;
-var
-x : array[1..3] of array[3..6] of record
-	z: record
-		a: integer;
-		b:string
-	end
-end;
-var l: real;
-const t=5;
-var r: real;
+type i=string;
+var a : i;
 begin
-x[2][3+4].z.a := 5;
-t:=6;
+a:='2';
 end.

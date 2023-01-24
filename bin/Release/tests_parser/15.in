@@ -1,0 +1,7 @@
+program p;
+var i, b:integer;
+begin
+repeat
+i:=0; 
+until 2=2
+end.

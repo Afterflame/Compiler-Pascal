@@ -1,0 +1,18 @@
+ Programm
+ ÃÄÄ Heading
+ ³   ÀÄÄ P
+ ÃÄÄ I
+ ÃÄÄ B
+ ÀÄÄ CompoundStatement
+     ÀÄÄ RepetetiveStatement
+         ÃÄÄ =
+         ³   ÃÄÄ Signed Factor(+)
+         ³   ³   ÀÄÄ 2
+         ³   ÀÄÄ Signed Factor(+)
+         ³       ÀÄÄ 2
+         ÃÄÄ AssignStatement
+         ³   ÃÄÄ I : Var
+         ³   ÀÄÄ Signed Factor(+)
+         ³       ÀÄÄ 0
+         ÀÄÄ EmptyStatement
+

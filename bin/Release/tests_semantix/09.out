@@ -1,0 +1,24 @@
+ Programm
+ ÃÄÄ Heading
+ ³   ÀÄÄ P
+ ÃÄÄ A
+ ÃÄÄ F : Function
+ ³   ÀÄÄ CompoundStatement
+ ³       ÃÄÄ AssignStatement
+ ³       ³   ÃÄÄ A : Var
+ ³       ³   ÀÄÄ Signed Factor(+)
+ ³       ³       ÀÄÄ 5
+ ³       ÀÄÄ EmptyStatement
+ ÀÄÄ CompoundStatement
+     ÀÄÄ EmptyStatement
+
+ main : SymProc
+ ÃÄÄ A : SymVar
+ ³   ÀÄÄ STRING : SymString
+ ÀÄÄ F : SymFunc
+     ÃÄÄ INTEGER : SymInteger
+     ÃÄÄ A : SymVar
+     ³   ÀÄÄ INTEGER : SymInteger
+     ÀÄÄ F : SymVar
+         ÀÄÄ INTEGER : SymInteger
+

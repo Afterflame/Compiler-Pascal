@@ -1,0 +1,17 @@
+ Programm
+ ÃÄÄ Heading
+ ³   ÀÄÄ P
+ ÃÄÄ I
+ ÃÄÄ B
+ ÀÄÄ CompoundStatement
+     ÃÄÄ WhileStatementNode
+     ³   ÃÄÄ >
+     ³   ³   ÃÄÄ Signed Factor(+)
+     ³   ³   ³   ÀÄÄ 7
+     ³   ³   ÀÄÄ Signed Factor(+)
+     ³   ³       ÀÄÄ 3
+     ³   ÀÄÄ EmptyStatement
+     ÃÄÄ EmptyStatement
+     ÃÄÄ EmptyStatement
+     ÀÄÄ EmptyStatement
+

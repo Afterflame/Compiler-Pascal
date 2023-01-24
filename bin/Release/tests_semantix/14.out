@@ -1,0 +1,23 @@
+ Programm
+ ÃÄÄ Heading
+ ³   ÀÄÄ P
+ ÃÄÄ A
+ ÀÄÄ CompoundStatement
+     ÃÄÄ IfStatementNode
+     ³   ÃÄÄ Signed Factor(+)
+     ³   ³   ÀÄÄ <
+     ³   ³       ÃÄÄ Signed Factor(+)
+     ³   ³       ³   ÀÄÄ A : Var
+     ³   ³       ÀÄÄ Signed Factor(+)
+     ³   ³           ÀÄÄ 5
+     ³   ÃÄÄ AssignStatement
+     ³   ³   ÃÄÄ A : Var
+     ³   ³   ÀÄÄ Signed Factor(+)
+     ³   ³       ÀÄÄ 8
+     ³   ÀÄÄ null
+     ÀÄÄ EmptyStatement
+
+ main : SymProc
+ ÀÄÄ A : SymVar
+     ÀÄÄ INTEGER : SymInteger
+

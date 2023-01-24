@@ -1,20 +1,4 @@
-program exFunction;
-var
-   a, b, ret, dummy : integer;
-(*function definition *)
-function max(num1, num2: integer): integer;
-var
-   result: integer;
+program p;
+type x:integer;
 begin
-   if (num1 > num2) then
-      dummy := num1
-   else
-      dummy := num2;
-   max := result;
 end;
-
-begin
-   a := 100;
-   b := 200;
-   ret := max(a, b);
-end.

@@ -1,2 +1,18 @@
-Can not use const at 14 2
+ Programm
+ ÃÄÄ Heading
+ ³   ÀÄÄ P
+ ÃÄÄ I
+ ÃÄÄ A
+ ÀÄÄ CompoundStatement
+     ÃÄÄ AssignStatement
+     ³   ÃÄÄ A : Var
+     ³   ÀÄÄ Signed Factor(+)
+     ³       ÀÄÄ UConst
+     ³           ÀÄÄ 2
+     ÀÄÄ EmptyStatement
+
+ main : SymProc
+ ÃÄÄ I : SymString
+ ÀÄÄ A : SymVar
+     ÀÄÄ I : SymString
 

@@ -1,0 +1,8 @@
+program p;
+var a:string;
+function f;
+begin
+a:=5;
+end;
+begin
+end.

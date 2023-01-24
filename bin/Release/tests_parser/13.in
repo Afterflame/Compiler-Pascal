@@ -1,0 +1,6 @@
+program p;
+var i, b:integer;
+begin
+while 7>3 do
+;;;
+end.

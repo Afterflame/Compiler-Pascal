@@ -1,0 +1,9 @@
+program p;
+var a:string;
+function f:integer;
+var a:integer;
+begin
+a:=5;
+end;
+begin
+end.

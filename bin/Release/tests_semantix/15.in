@@ -1,0 +1,22 @@
+program exFunction;
+var
+   a, b, ret : integer;
+function max(num1, num2: integer): integer;
+var
+   resultt: integer;
+begin
+   if (num1 > num2) then
+      resultt := num1
+   else
+      resultt := num2;
+   max := resultt;
+end;
+
+begin
+   a := 100;
+   b := 200;
+   do
+   ret := ret + max(a, b);
+   until ret < 1000;
+   writeln( 'Max value is : ', ret );
+end.

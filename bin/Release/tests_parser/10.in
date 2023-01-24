@@ -1,0 +1,6 @@
+program p;
+var i, b:integer;
+begin
+for i:=0 to 6 do
+b:=i;
+end.

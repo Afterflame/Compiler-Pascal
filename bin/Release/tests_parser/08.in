@@ -1,7 +1,4 @@
-program exFunction;
-var
-   a, b, ret : integer;
-Begin
-   
-   writeln( 'Max value is : ', ret );
-end.
+program p;
+var x:array[4..3];
+begin
+end;

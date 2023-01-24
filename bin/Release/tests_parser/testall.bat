@@ -11,7 +11,7 @@ for %%t in (*.in) do (
 	echo expexted output:
 	type %%~nt.ans
 	echo:
-	Compiler %%t -p > %%~nt.out
+	Compiler %%t -s > %%~nt.out
 	set /a right=right+1
 	set /a isok=1
 	fc %%~nt.out %%~nt.ans > fc.out && echo OK ||  (set /a right=right-1 && echo actual output: && type %%~nt.out && echo WA)

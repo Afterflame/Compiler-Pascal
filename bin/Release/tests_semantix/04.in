@@ -1,5 +1,6 @@
 program p;
-var a:integer;
+type i=integer;
+var a : i;
 begin
-b:=3;
+a:='2';
 end.

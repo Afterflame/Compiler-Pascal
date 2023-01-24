@@ -1,0 +1,36 @@
+ Programm
+ ÃÄÄ Heading
+ ³   ÀÄÄ P
+ ÃÄÄ A
+ ÀÄÄ CompoundStatement
+     ÃÄÄ AssignStatement
+     ³   ÃÄÄ RecordAccess
+     ³   ³   ÃÄÄ ArrayAccess
+     ³   ³   ³   ÃÄÄ ArrayAccess
+     ³   ³   ³   ³   ÃÄÄ RecordAccess
+     ³   ³   ³   ³   ³   ÃÄÄ ArrayAccess
+     ³   ³   ³   ³   ³   ³   ÃÄÄ A : Var
+     ³   ³   ³   ³   ³   ³   ÀÄÄ Signed Factor(+)
+     ³   ³   ³   ³   ³   ³       ÀÄÄ 1
+     ³   ³   ³   ³   ³   ÀÄÄ A
+     ³   ³   ³   ³   ÀÄÄ Signed Factor(+)
+     ³   ³   ³   ³       ÀÄÄ 2
+     ³   ³   ³   ÀÄÄ Signed Factor(+)
+     ³   ³   ³       ÀÄÄ 3
+     ³   ³   ÀÄÄ C
+     ³   ÀÄÄ Signed Factor(+)
+     ³       ÀÄÄ UConst
+     ³           ÀÄÄ 2
+     ÀÄÄ EmptyStatement
+
+ main : SymProc
+ ÀÄÄ A : SymVar
+     ÀÄÄ type[1 , 2] : SymArray
+         ÀÄÄ type : SymRecord
+             ÀÄÄ A : SymVar
+                 ÀÄÄ type[2 , 3] : SymArray
+                     ÀÄÄ type[3 , 4] : SymArray
+                         ÀÄÄ type : SymRecord
+                             ÀÄÄ C : SymVar
+                                 ÀÄÄ STRING : SymString
+

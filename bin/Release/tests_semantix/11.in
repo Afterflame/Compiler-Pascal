@@ -1,0 +1,8 @@
+program p;
+var a:string;
+function f(a:integer):string;
+begin
+end;
+begin
+a:=f(3);
+end.

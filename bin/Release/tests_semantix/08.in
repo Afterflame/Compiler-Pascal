@@ -1,7 +1,6 @@
-program exFunction;
-var
-   a, b, ret : integer;
-Begin
-   
-   writeln( 'Max value is : ', ret );
+program p;
+function f:integer;
+begin
+end;
+begin
 end.
