@@ -1,0 +1,5 @@
+program p;
+var a:integer;
+begin
+b:=3;
+end.

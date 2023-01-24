@@ -869,6 +869,9 @@ namespace Compiler
                         case ' ':
                             e.Add(Event.Space);
                             break;
+                        case '\t':
+                            e.Add(Event.Space);
+                            break;
                         case ';':
                             e.Add(Event.Semicolon);
                             break;
@@ -914,10 +917,10 @@ namespace Compiler
                 this.it = it;
                 this.ans = ans;
             }
-            public Lexem ReturnAns(ref int mainCurIdx, ref int mainCurLine, ref int mainCurIt, int startIdx, int startLine)
+            public Lexem ReturnAns(ref int mainCurIdx, ref int mainCurLine, ref int mainCurIt, int startIdx, int startLine, ref string fileText)
             {
-                if((startIdx == curIdx && startLine == curLine && (!ans.Value.Equals(Lexem.SpecialSymbol.EOF))) || ans == null)
-                    throw new Exception(ErrorConstructor.GetPositionMassage(startIdx, startIdx, Error.InvalidSymbol));
+                if(ans is null || (startIdx == curIdx && startLine == curLine && (!ans.Value.Equals(Lexem.SpecialSymbol.EOF))))
+                    throw new Exception(ErrorConstructor.GetPositionMassage(startLine, startIdx, Error.InvalidSymbol));
                 mainCurIdx = curIdx;
                 mainCurLine = curLine;
                 mainCurIt = it;
@@ -1006,7 +1009,7 @@ namespace Compiler
                 }
                 if (ans != null) lastExit = new LastExit(curIdx, curLine, it, ans);
             }
-            return lastExit.ReturnAns(ref curIdx, ref curLine, ref it, Idx, Line);
+            return lastExit.ReturnAns(ref curIdx, ref curLine, ref it, Idx, Line, ref fileText);
         }
     }
 }

@@ -12,16 +12,12 @@ namespace Compiler
     public partial class SimpleParser
     {
         Lexer lexer;
-        SymTableStack symTableStack;
-        List<Symbol> builtIn = new List<Symbol>()
-        { };
         public SimpleParser(ref Lexer lexer)
         {
             this.lexer = lexer;
             this.lexer.NextToken();
-            symTableStack = new SymTableStack();
         }
-        public static void PrintExpressionTree(Node tree, string indent, bool last)
+        public static void PrintNodeTree(Node tree, string indent, bool last)
         {
             var value = (tree != null ? tree.getStrVal() : "null");
             if (indent == "")
@@ -40,16 +36,16 @@ namespace Compiler
             {
                 if (node == null)
                 {
-                    PrintExpressionTree(node, indent, false);
+                    PrintNodeTree(node, indent, false);
                     return;
                 }
                 if (node.Equals(list.Last()))
                 {
-                    PrintExpressionTree(node, indent, true);
+                    PrintNodeTree(node, indent, true);
                 }
                 else
                 {
-                    PrintExpressionTree(node, indent, false);
+                    PrintNodeTree(node, indent, false);
                 }
             }
         }

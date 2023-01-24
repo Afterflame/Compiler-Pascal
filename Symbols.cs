@@ -34,6 +34,12 @@ namespace Compiler
                 throw new Exception(String.Format("Identifier not found: \"{0}\"", name));
             return data[name];
         }
+        public Symbol GetVar(string name)
+        {
+            if (!data.ContainsKey(name))
+                throw new Exception(String.Format("Identifier not found: \"{0}\"", name));
+            return data[name].AsVar();
+        }
         public Symbol GetAt(int id)
         {
             return ordered[id];
@@ -99,11 +105,27 @@ namespace Compiler
     public abstract class Symbol
     {
         public string name;
-        public virtual string GetStrValue() { return name; }
+        public virtual string GetStrVal() { return name; }
         public virtual SymTable GetChildren(){ return new SymTable(); }
         public Symbol(string name)
         {
             this.name = name;
+        }
+        public virtual SymVar AsVar()
+        {
+            throw new Exception(String.Format("{0} is not a variable", name));
+        }
+        public virtual SymType AsType()
+        {
+            throw new Exception(String.Format("{0} is not a type", name));
+        }
+        public virtual SymArray AsArray()
+        {
+            throw new Exception(String.Format("{0} is not an array", name));
+        }
+        public virtual SymRecord AsRecord()
+        {
+            throw new Exception(String.Format("{0} is not a record", name));
         }
     }
     public class SymVar : Symbol
@@ -115,6 +137,24 @@ namespace Compiler
         {
             this.type = type;
             this.type.name = this.type.name ?? "type";
+        }
+        public override SymVar AsVar()
+        {
+            return this;
+        }
+        public virtual bool IsConst()
+        {
+            return false;
+        }
+    }
+
+    public class SymConst : SymVar 
+    {
+        public SymConst(string name, SymType type) : base(name, type) { }
+
+        public override bool IsConst()
+        {
+            return true;
         }
     }
     public class SymParam : SymVar
@@ -129,6 +169,11 @@ namespace Compiler
     {
         public override SymTable GetChildren() { return new SymTable(); }
         public SymType(string name) : base(name) { }
+
+        public override SymType AsType()
+        {
+            return this;
+        }
     }
     public class SymBool : SymType
     {
@@ -155,7 +200,7 @@ namespace Compiler
         public SymType type;
         public int l;
         public int r;
-        public override string GetStrValue() { return String.Format("{0}[{1} , {2}]", name, l, r); }
+        public override string GetStrVal() { return String.Format("{0}[{1} , {2}]", name, l, r); }
         public override SymTable GetChildren()
         {
             return new SymTable(type); 
@@ -167,6 +212,11 @@ namespace Compiler
             this.r = r;
             this.type.name = this.type.name ?? "type";
         }
+
+        public override SymArray AsArray()
+        {
+            return this;
+        }
     }
     public class SymRecord : SymType
     {
@@ -175,6 +225,10 @@ namespace Compiler
         public SymRecord(string name, SymTable fields) : base(name)
         {
             this.fields = fields;
+        }
+        public override SymRecord AsRecord()
+        {
+            return this;
         }
     }
     public class SymProc : Symbol
@@ -198,12 +252,9 @@ namespace Compiler
             this.body = body;
         }
     }
-    public class SymFunc : Symbol
+    public class SymFunc : SymProc
     {
-        public SymTable params_;
-        public SymTable locals_;
         public SymType type_;
-        public CompoundStatementNode body;
 
         public override SymTable GetChildren() 
         {
@@ -213,12 +264,9 @@ namespace Compiler
             children.AddRange(locals_);
             return children;
         }
-        public SymFunc(string name, SymTable params_, SymTable locals_, SymType type_, CompoundStatementNode body) : base(name)
+        public SymFunc(string name, SymTable params_, SymTable locals_, SymType type_, CompoundStatementNode body) : base(name, params_, locals_, body)
         {
-            this.params_ = params_;
-            this.locals_ = locals_;
             this.type_ = type_;
-            this.body = body;
             this.type_.name = this.type_.name ?? "type";
         }
     }
