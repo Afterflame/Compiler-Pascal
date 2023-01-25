@@ -1,4 +1,4 @@
- Programm
+ Programm
  цдд Heading
  Ё   юдд P
  цдд F : Function
@@ -12,4 +12,3 @@
      цдд INTEGER : SymInteger
      юдд F : SymVar
          юдд INTEGER : SymInteger
-

@@ -1,4 +1,4 @@
- Programm
+ Programm
  цдд Heading
  Ё   юдд P
  цдд A
@@ -20,4 +20,3 @@
  main : SymProc
  юдд A : SymVar
      юдд INTEGER : SymInteger
-

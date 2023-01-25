@@ -2,13 +2,17 @@
  цдд Heading
  Ё   юдд P
  цдд A
+ цдд ConstDef
+ Ё   юдд text
  юдд CompoundStatement
      цдд AssignStatement
      Ё   цдд A : Var
      Ё   юдд Signed Factor(+)
-     Ё       юдд 2
+     Ё       юдд B : Var
      юдд EmptyStatement
 
  main : SymProc
- юдд A : SymVar
-     юдд INTEGER : SymInteger
+ цдд A : SymVar
+ Ё   юдд STRING : SymString
+ юдд B : SymConst
+     юдд STRING : SymString

@@ -1,0 +1,9 @@
+program p;
+var a:array[1..2] of record
+	a:array[2..3, 3..4] of record
+		c:string
+	end
+end;
+begin
+a[1].a[2,3].c:=2;
+end.

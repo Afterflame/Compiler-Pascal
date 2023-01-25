@@ -1,3 +1,20 @@
-Индекс за пределами диапазона. Индекс должен быть положительным числом, а его размер не должен превышать размер коллекции.
-Имя параметра: index
-
+ Programm
+ ├── Heading
+ │   └── P
+ ├── A
+ └── CompoundStatement
+     ├── ForStatementNode 1
+     │   ├── A
+     │   ├── Signed Factor(+)
+     │   │   └── 1
+     │   ├── Signed Factor(+)
+     │   │   └── 5
+     │   └── WRITE
+     │       └── Signed Factor(+)
+     │           └── UConst
+     │               └── a
+     └── EmptyStatement
+
+ main : SymProc
+ └── A : SymVar
+     └── INTEGER : SymInteger

@@ -1,4 +1,4 @@
- Programm
+ Programm
  цдд Heading
  Ё   юдд P
  цдд I
@@ -15,4 +15,3 @@
  цдд I : SymString
  юдд A : SymVar
      юдд I : SymString
-

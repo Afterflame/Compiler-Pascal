@@ -13,10 +13,11 @@ begin
 end;
 
 begin
-   a := 100;
-   b := 200;
-   do
-   ret := ret + max(a, b);
+   a := 1;
+   b := 1;
+   repeat
+   	ret := ret + max(a, b);
+	a:=a+1
    until ret < 1000;
-   writeln( 'Max value is : ', ret );
+   write( 'TEXT');
 end.

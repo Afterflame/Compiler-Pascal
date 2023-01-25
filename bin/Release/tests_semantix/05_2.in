@@ -1,0 +1,5 @@
+program p;
+const b = 'text';
+begin
+b='another';
+end.

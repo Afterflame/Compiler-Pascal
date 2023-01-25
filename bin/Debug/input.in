@@ -1,5 +1,22 @@
-12(* 12 
-*) 1 //nnn
-{1 {} 2{} {
-4
-}
+program exFunction;
+var
+   a, b, ret : integer;
+function max(num1, num2: integer): integer;
+var
+   resultt: integer;
+begin
+   if (num1 > num2) then
+      resultt := num1
+   else
+      resultt := num2;
+   max := resultt;
+end;
+
+begin
+   a := 100;
+   b := 200;
+   repeat
+   ret := ret + max(a, b);
+   until ret < 1000;
+   write( 'TEXT');
+end.

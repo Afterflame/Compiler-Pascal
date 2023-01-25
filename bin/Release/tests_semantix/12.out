@@ -1,4 +1,4 @@
- Programm
+ Programm
  цдд Heading
  Ё   юдд P
  цдд A
@@ -33,4 +33,3 @@
                          юдд type : SymRecord
                              юдд C : SymVar
                                  юдд STRING : SymString
-

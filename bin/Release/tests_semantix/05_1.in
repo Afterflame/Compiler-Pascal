@@ -1,0 +1,6 @@
+program p;
+var a : string;
+const b = 'text';
+begin
+a:=b;
+end.

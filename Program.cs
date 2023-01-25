@@ -82,10 +82,13 @@ namespace Compiler
             if (args == null || args.Length == 0)
             {
                 fileText = System.IO.File.ReadAllText(@"input.in");
-                lexerOnly = true;
             }
             else
             {
+                lexerOnly = false;
+                expressionOnly = false;
+                parserOnly = false;
+                semantixOnly = false;
                 foreach (string arg in args)
                 {
                     if (arg == "-l") lexerOnly = true;
@@ -136,7 +139,7 @@ namespace Compiler
 
         static void Main(string[] args)
         {
-            Console.ReadKey();
+            semantixOnly = true;
             SetupWithArgs(args);
             if (args == null || args.Length == 0)
             {
@@ -144,11 +147,13 @@ namespace Compiler
                 if (semantixOnly) ParseTables();
                 if (expressionOnly) WriteExpression();
                 if (lexerOnly) WriteLexems();
+                Console.ReadKey();
             }
             else
             {
                 try
                 {
+                    Console.ReadKey();
                     if (parserOnly) ParseTree();
                     if (semantixOnly) ParseTables();
                     if (expressionOnly) WriteExpression();
