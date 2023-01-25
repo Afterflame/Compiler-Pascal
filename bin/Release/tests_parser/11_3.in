@@ -1,0 +1,11 @@
+program p;
+var i, b:integer;
+
+procedure p(i:integer);
+begin
+for i:=0 downto 5 do
+	write(' ');
+end;
+
+begin
+end.

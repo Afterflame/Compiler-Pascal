@@ -11,6 +11,7 @@ namespace Compiler
         public enum Error
         {
             CharRange,
+            IntRange,
             UnknownSymbol,
             UnexpectedSymbol,
             InvalidSymbol,
@@ -31,6 +32,9 @@ namespace Compiler
                 {
                     case Error.CharRange:
                         msg = "Expexted number in [0,127] range as char code";
+                        break;
+                    case Error.IntRange:
+                        msg = "Too large for int";
                         break;
                     case Error.UnknownSymbol:
                         msg = "Unknown symbol";
@@ -69,7 +73,7 @@ namespace Compiler
                         msg = "Unknown error";
                         break;
                 }
-                return msg + " at " + line + " " + idx;
+                return String.Format("{0}:{1} {2}", line, idx, msg);
             }
         }
         public static string fileText = "";
@@ -139,7 +143,7 @@ namespace Compiler
 
         static void Main(string[] args)
         {
-            semantixOnly = true;
+            parserOnly = true;
             SetupWithArgs(args);
             if (args == null || args.Length == 0)
             {

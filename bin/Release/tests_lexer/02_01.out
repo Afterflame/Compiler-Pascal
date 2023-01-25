@@ -1,13 +1,0 @@
-    1    1    Additive_Op                                    Plus                                       +
-    1    2    Additive_Op                                   Minus                                       -
-    1    3Multiplicative_Op                                Multiply                                       *
-    1    4Multiplicative_Op                                  Divide                                       /
-    1    5  Relational_Op                                   Equal                                       =
-    1    6        Special                                  Assign                                      :=
-    1    8        Special                                   Colon                                       :
-    1    9    Additive_Op                                    Plus                                       +
-    1   10    Additive_Op                                    Plus                                       +
-    1   11    Additive_Op                                   Minus                                       -
-    1   12  Relational_Op                                   Equal                                       =
-    1   13    Additive_Op                                    Plus                                       +
-    1   14        Special                                     EOF

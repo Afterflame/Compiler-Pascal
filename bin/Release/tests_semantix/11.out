@@ -21,5 +21,5 @@
      цдд STRING : SymString
      цдд A : SymParam
      Ё   юдд INTEGER : SymInteger
-     юдд F : SymVar
+     юдд RESULT : SymVar
          юдд STRING : SymString

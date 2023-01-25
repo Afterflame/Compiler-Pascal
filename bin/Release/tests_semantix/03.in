@@ -1,5 +1,6 @@
 program p;
 var a : integer;
+var a : string
 begin
 a:=2;
 end.

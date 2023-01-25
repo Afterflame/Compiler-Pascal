@@ -1,0 +1,20 @@
+ Programm
+ ÃÄÄ Heading
+ ³   ÀÄÄ P
+ ÃÄÄ I
+ ÃÄÄ B
+ ÃÄÄ P : Function
+ ³   ÀÄÄ CompoundStatement
+ ³       ÃÄÄ ForStatementNode -1
+ ³       ³   ÃÄÄ I
+ ³       ³   ÃÄÄ Signed Factor(+)
+ ³       ³   ³   ÀÄÄ 0
+ ³       ³   ÃÄÄ Signed Factor(+)
+ ³       ³   ³   ÀÄÄ 5
+ ³       ³   ÀÄÄ WRITE
+ ³       ³       ÀÄÄ Signed Factor(+)
+ ³       ³           ÀÄÄ UConst
+ ³       ³               ÀÄÄ  
+ ³       ÀÄÄ EmptyStatement
+ ÀÄÄ CompoundStatement
+     ÀÄÄ EmptyStatement

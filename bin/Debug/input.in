@@ -1,22 +1,10 @@
-program exFunction;
-var
-   a, b, ret : integer;
-function max(num1, num2: integer): integer;
-var
-   resultt: integer;
-begin
-   if (num1 > num2) then
-      resultt := num1
-   else
-      resultt := num2;
-   max := resultt;
+program p;
+var a, b, c:integer;
+var boo: boolean;
+var d:array[1..5,1..5] of integer;
+var e:record
+        e:integer
 end;
-
 begin
-   a := 100;
-   b := 200;
-   repeat
-   ret := ret + max(a, b);
-   until ret < 1000;
-   write( 'TEXT');
+a:= ---+1*3;
 end.

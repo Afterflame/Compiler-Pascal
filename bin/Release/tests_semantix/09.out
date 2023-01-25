@@ -19,5 +19,5 @@
      цдд INTEGER : SymInteger
      цдд A : SymVar
      Ё   юдд INTEGER : SymInteger
-     юдд F : SymVar
+     юдд RESULT : SymVar
          юдд INTEGER : SymInteger

@@ -166,13 +166,16 @@ namespace Compiler
             {
                 get
                 {
+                    if (lastCharValue > 127) throw new Exception();
+                    if(lastCharValue!=-1)
+                        return value + Convert.ToChar(lastCharValue).ToString();
                     return value;
                 }
             }
             public void AddChar(char ch)
             {
                 if (lastCharValue != -1)
-                    value += (char)lastCharValue;
+                    value += Convert.ToChar(lastCharValue).ToString();
                 lastCharValue = -1;
                 value += ch;
             }
@@ -184,6 +187,12 @@ namespace Compiler
                 else
                     lastCharValue = lastCharValue * 10 + a;
             }
+            public void FinishChar()
+            {
+                if (lastCharValue != -1)
+                    value += (char)lastCharValue;
+                lastCharValue = -1;
+            }
         }
         public class IdentifierData
         {
@@ -191,7 +200,8 @@ namespace Compiler
             public string Value { get { return value.ToUpper(); } }
             public void AddChar(char ch)
             {
-                value += ch;
+                if(value.Length<32)
+                    value += ch;
                 value = value.ToUpper();
             }
         }
@@ -247,9 +257,9 @@ namespace Compiler
         public string Write()
         {
             if (Input == null || Input.Length == 0)
-                return String.Format("{0,5}{1,5}{2,15}{3,40}", Line.ToString(), Index.ToString(), Type.ToString(), Value.ToString());
+                return String.Format("{0,5} {1,5} {2,20} {3,35}", Line.ToString(), Index.ToString(), Type.ToString(), Value.ToString());
             else
-                return String.Format("{0,5}{1,5}{2,15}{3,40}{4,40}", Line.ToString(), Index.ToString(), Type.ToString(), Value.ToString(), Input.ToString());
+                return String.Format("{0,5} {1,5} {2,20} {3,35}  {4,35}", Line.ToString(), Index.ToString(), Type.ToString(), Value.ToString(), Input.ToString());
         }
     }
 }

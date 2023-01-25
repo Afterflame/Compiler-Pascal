@@ -21,10 +21,11 @@
  Ё       Ё       цдд RESULTT : Var
  Ё       Ё       юдд Signed Factor(+)
  Ё       Ё           юдд NUM2 : Var
- Ё       цдд AssignStatement
- Ё       Ё   цдд MAX : Var
+ Ё       цдд MAX
+ Ё       Ё   цдд Signed Factor(+)
+ Ё       Ё   Ё   юдд RESULTT : Var
  Ё       Ё   юдд Signed Factor(+)
- Ё       Ё       юдд RESULTT : Var
+ Ё       Ё       юдд NUM1 : Var
  Ё       юдд EmptyStatement
  юдд CompoundStatement
      цдд AssignStatement
@@ -80,5 +81,5 @@
      Ё   юдд INTEGER : SymInteger
      цдд RESULTT : SymVar
      Ё   юдд INTEGER : SymInteger
-     юдд MAX : SymVar
+     юдд RESULT : SymVar
          юдд INTEGER : SymInteger

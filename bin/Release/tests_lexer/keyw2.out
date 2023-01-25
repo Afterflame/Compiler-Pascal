@@ -1,0 +1,40 @@
+    1     1              KeyWord                               LABEL                               LABEL
+    1     7              KeyWord                                CASE                                CASE
+    1    12              KeyWord                              STRING                              STRING
+    1    19    Multiplicative_Op                                 AND                                 AND
+    1    23              KeyWord                               ARRAY                               ARRAY
+    1    29              KeyWord                               BEGIN                               BEGIN
+    1    35              KeyWord                             BOOLEAN                             BOOLEAN
+    1    43              KeyWord                                CHAR                                CHAR
+    1    48              KeyWord                                 CHR                                 CHR
+    1    52              KeyWord                               CONST                               CONST
+    1    58    Multiplicative_Op                                 DIV                                 DIV
+    1    62              KeyWord                                  DO                                  DO
+    1    65              KeyWord                              DOWNTO                              DOWNTO
+    1    72              KeyWord                                ELSE                                ELSE
+    2     1              KeyWord                                 END                                 END
+    2     5              KeyWord                                 FOR                                 FOR
+    2     9              KeyWord                            FUNCTION                            FUNCTION
+    2    18              KeyWord                                  IF                                  IF
+    2    21              KeyWord                                  IN                                  IN
+    2    24              KeyWord                             INTEGER                             INTEGER
+    2    32    Multiplicative_Op                                 MOD
+    2    36              KeyWord                                 NIL                                 NIL
+    2    40              KeyWord                                 NOT                                 NOT
+    2    44              KeyWord                                  OF                                  OF
+    2    47    Multiplicative_Op                                  OR
+    2    50              KeyWord                           PROCEDURE                           PROCEDURE
+    2    60              KeyWord                             PROGRAM                             PROGRAM
+    2    68              KeyWord                                REAL                                REAL
+    2    73              KeyWord                              RECORD                              RECORD
+    3     1              KeyWord                              REPEAT                              REPEAT
+    3     8              KeyWord                                THEN                                THEN
+    3    13              KeyWord                                  TO                                  TO
+    3    16              KeyWord                                TYPE                                TYPE
+    3    21              KeyWord                               UNTIL                               UNTIL
+    3    27              KeyWord                                 VAR                                 VAR
+    3    31              KeyWord                               WHILE                               WHILE
+    3    37              KeyWord                                WITH                                WITH
+    3    42              KeyWord                                TRUE                                TRUE
+    3    47              KeyWord                               FALSE                               FALSE
+    3    53              Special                                 EOF

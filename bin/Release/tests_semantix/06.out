@@ -15,7 +15,7 @@
  main : SymProc
  цдд F : SymFunc
  Ё   цдд INTEGER : SymInteger
- Ё   юдд F : SymVar
+ Ё   юдд RESULT : SymVar
  Ё       юдд INTEGER : SymInteger
  юдд A : SymVar
      юдд INTEGER : SymInteger

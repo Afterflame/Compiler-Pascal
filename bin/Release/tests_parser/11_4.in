@@ -1,0 +1,20 @@
+program p;
+var i, b:integer;
+
+function f(i:integer):string;
+begin
+for i:=0 downto 5 do
+	write('a');
+end;
+
+procedure p(i:integer);
+begin
+for i:=0 downto 5 do
+	write(f(1)+f(2));
+end;
+
+begin
+while i=0 do
+b:=i;
+p(2);
+end.

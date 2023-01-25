@@ -1,0 +1,5 @@
+    1     1              Literal          Compiler.Lexem+LiteralData                                 #65
+    1     4              Literal          Compiler.Lexem+LiteralData                                 #45
+    1     7              Literal          Compiler.Lexem+LiteralData                                 #99
+    1    10              Literal          Compiler.Lexem+LiteralData                                 #45
+    1    13              Special                                 EOF

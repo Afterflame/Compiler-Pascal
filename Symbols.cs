@@ -24,6 +24,12 @@ namespace Compiler
             ordered = new List<Symbol>();
             this.Add(symbol);
         }
+        public void PopFirst()
+        {
+            var value = ordered.First().name;
+            data.Remove(value);
+            ordered.RemoveAt(ordered.Count - 1);
+        }
         public int Count()
         {
             return data.Count();
@@ -240,8 +246,8 @@ namespace Compiler
         public override SymTable GetChildren()
         {
             SymTable children = new SymTable();
-            children.AddRange(params_);
-            children.AddRange(locals_);
+            params_.ordered.ForEach(x => { try { children.Add(x); } catch { } });
+            locals_.ordered.ForEach(x => { try { children.Add(x); } catch { } });
             return children;
         }
 

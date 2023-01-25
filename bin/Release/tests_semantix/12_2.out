@@ -1,0 +1,27 @@
+ Programm
+ цдд Heading
+ Ё   юдд P
+ цдд Y
+ цдд X
+ цдд A
+ юдд CompoundStatement
+     юдд EmptyStatement
+
+ main : SymProc
+ цдд X[1 , 2] : SymArray
+ Ё   юдд type : SymRecord
+ Ё       юдд A : SymVar
+ Ё           юдд type[2 , 3] : SymArray
+ Ё               юдд type[3 , 4] : SymArray
+ Ё                   юдд type : SymRecord
+ Ё                       юдд C : SymVar
+ Ё                           юдд STRING : SymString
+ юдд A : SymVar
+     юдд X[1 , 2] : SymArray
+         юдд type : SymRecord
+             юдд A : SymVar
+                 юдд type[2 , 3] : SymArray
+                     юдд type[3 , 4] : SymArray
+                         юдд type : SymRecord
+                             юдд C : SymVar
+                                 юдд STRING : SymString

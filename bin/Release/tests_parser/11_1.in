@@ -1,0 +1,11 @@
+program p;
+var i, b:integer;
+
+function f(i:integer):string;
+begin
+
+begin
+while i=0 do
+b:=i;
+f(1);
+end.

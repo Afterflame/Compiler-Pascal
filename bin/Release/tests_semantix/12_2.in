@@ -1,0 +1,10 @@
+program p;
+type y = array[1..2] of record
+	a:array[2..3, 3..4] of record
+		c:string
+	end
+end;
+type x=y;
+var a: x;
+begin
+end.

@@ -150,7 +150,7 @@ namespace Compiler
                 [State.HexInt_char] = new Action(() => { exitValue = uIntData.Value; exitType = Lexem.Types.UInteger; }),
                 [State.Float_char] = new Action(() => { exitValue = uRealData.Value; exitType = Lexem.Types.UReal; }),
                 [State.Float_e_power] = new Action(() => { exitValue = uRealData.Value; exitType = Lexem.Types.UReal; }),
-                [State.Char_number] = new Action(() => { exitValue = literalData; exitType = Lexem.Types.Literal; }),
+                [State.Char_number] = new Action(() => { exitValue = literalData.Value; exitType = Lexem.Types.Literal; }),
                 [State.Literal_end] = new Action(() => { exitValue = literalData.Value; exitType = Lexem.Types.Literal; }),
                 [State.Identifier_start] = new Action(() => { exitValue = identifierData.Value; exitType = Lexem.Types.Identifier; }),
                 [State.Identifier_char] = new Action(() => { exitValue = identifierData.Value; exitType = Lexem.Types.Identifier; }),
@@ -409,8 +409,8 @@ namespace Compiler
                 {
                     lexerFSM[State.Number_char].Add(Event.Number, new Action<char>((ch) =>
                     {
-                        uIntData.AddDigit(ch - '0');
-                        uRealData.AddDigit(ch - '0');
+                            uIntData.AddDigit(ch - '0');
+                            uRealData.AddDigit(ch - '0');
                     }));
                     lexerFSM[State.Number_char].Add(Event.Dot, new Action<char>((ch) =>
                     {
@@ -519,7 +519,6 @@ namespace Compiler
                     {
                         try
                         {
-
                             literalData.IncreaceChar(ch - '0');
                         }
                         catch
@@ -531,6 +530,12 @@ namespace Compiler
                     {
                         currentStates.Add(State.Literal_start);
                         currentStates.Remove(State.Char_number);
+                    }));
+                    lexerFSM[State.Char_number].Add(Event.Hash, new Action<char>((ch) =>
+                    {
+                        currentStates.Add(State.Char_start);
+                        currentStates.Remove(State.Char_number);
+                        literalData.FinishChar();
                     }));
                 }
                 //Dot
@@ -1002,7 +1007,18 @@ namespace Compiler
                             exitType=Lexem.Types.KeyWord;
                             exitValue = (Lexem.KeyWord)Enum.Parse(typeof(Lexem.KeyWord), exitValue.ToString().ToUpper());
                         }
-                        ans = new Lexem(start, Line, Idx, exitType, exitValue, input);
+                        try
+                        {
+                            ans = new Lexem(start, Line, Idx, exitType, exitValue, input);
+                        }
+                        catch
+                        {
+                            if (exitType == Lexem.Types.UInteger)
+                            {
+                                throw new Exception(ErrorConstructor.GetPositionMassage(Line, Idx, Error.IntRange));
+                            }
+                            throw new Exception(ErrorConstructor.GetPositionMassage(Line, Idx, Error.Custom, "Unkown error while reading lexem"));
+                        }
                     }
                 }
                 if (currentStates.Count > 0 && evs.Last() != Event.EOF)

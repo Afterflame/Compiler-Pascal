@@ -1,0 +1,10 @@
+program p;
+var a, b, c:integer;
+var boo: boolean;
+var d:array[1..5,1..5] of integer;
+var e:record 
+	e:integer
+end;
+begin
+a:= 1-1-(1-1);
+end.

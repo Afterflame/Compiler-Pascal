@@ -1,0 +1,25 @@
+ Programm
+ ÃÄÄ Heading
+ ³   ÀÄÄ P
+ ÃÄÄ A
+ ÃÄÄ B
+ ÃÄÄ C
+ ÃÄÄ D
+ ÃÄÄ E
+ ÀÄÄ CompoundStatement
+     ÃÄÄ AssignStatement
+     ³   ÃÄÄ A : Var
+     ³   ÀÄÄ +
+     ³       ÃÄÄ Signed Factor(+)
+     ³       ³   ÀÄÄ ArrayAccess
+     ³       ³       ÃÄÄ ArrayAccess
+     ³       ³       ³   ÃÄÄ D : Var
+     ³       ³       ³   ÀÄÄ Signed Factor(+)
+     ³       ³       ³       ÀÄÄ 1
+     ³       ³       ÀÄÄ Signed Factor(+)
+     ³       ³           ÀÄÄ RecordAccess
+     ³       ³               ÃÄÄ E : Var
+     ³       ³               ÀÄÄ E
+     ³       ÀÄÄ Signed Factor(+)
+     ³           ÀÄÄ 13
+     ÀÄÄ EmptyStatement

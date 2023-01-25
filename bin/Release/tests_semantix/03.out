@@ -1,14 +1,1 @@
- Programm
- ÃÄÄ Heading
- ³   ÀÄÄ P
- ÃÄÄ A
- ÀÄÄ CompoundStatement
-     ÃÄÄ AssignStatement
-     ³   ÃÄÄ A : Var
-     ³   ÀÄÄ Signed Factor(+)
-     ³       ÀÄÄ 2
-     ÀÄÄ EmptyStatement
-
- main : SymProc
- ÀÄÄ A : SymVar
-     ÀÄÄ INTEGER : SymInteger
+Duplicate identifier: "A"

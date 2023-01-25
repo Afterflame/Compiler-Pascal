@@ -1,8 +1,8 @@
 program p;
-var a:string;
-function f;
+const a = 'tex';
+function f:string;
 begin
-a:=5;
+f:=a;
 end;
 begin
 end.

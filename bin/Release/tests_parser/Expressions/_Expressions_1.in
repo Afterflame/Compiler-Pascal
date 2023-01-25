@@ -1,0 +1,9 @@
+program p;
+var a, b, c:integer;
+var d:array[1..5,1..5] of integer;
+var e:record 
+	e:integer
+end;
+begin
+a:=13+b*(c+c);
+end.

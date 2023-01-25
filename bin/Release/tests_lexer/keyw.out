@@ -1,0 +1,7 @@
+    1     1              KeyWord                               BEGIN                               Begin
+    1     7           Identifier                               END12                               end12
+    1    13              KeyWord                                 END                                 end
+    1    16              Special                           Semicolon                                   ;
+    1    18             UInteger                                   2                                   2
+    1    19              KeyWord                                THEN                                Then
+    1    23              Special                                 EOF

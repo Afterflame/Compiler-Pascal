@@ -1,0 +1,9 @@
+program p;
+var a, b, c:integer;
+var d:array[1..5,1..5] of integer;
+var e:record 
+	e:integer
+end;
+begin
+a:=d[1][e.e]+13;
+end.

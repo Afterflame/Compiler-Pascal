@@ -1,0 +1,18 @@
+ Programm
+ ÃÄÄ Heading
+ ³   ÀÄÄ P
+ ÃÄÄ A
+ ÃÄÄ B
+ ÃÄÄ C
+ ÃÄÄ BOO
+ ÃÄÄ D
+ ÃÄÄ E
+ ÀÄÄ CompoundStatement
+     ÃÄÄ AssignStatement
+     ³   ÃÄÄ A : Var
+     ³   ÀÄÄ *
+     ³       ÃÄÄ Signed Factor(-)
+     ³       ³   ÀÄÄ 1
+     ³       ÀÄÄ Signed Factor(+)
+     ³           ÀÄÄ 3
+     ÀÄÄ EmptyStatement

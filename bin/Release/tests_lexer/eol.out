@@ -1,0 +1,5 @@
+    1     1           Identifier                                   F                                   f
+    2     1              Special                           Semicolon                                   ;
+    2     2              Special                           Semicolon                                   ;
+    4     1              Special                           Semicolon                                   ;
+    4     2              Special                                 EOF

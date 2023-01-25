@@ -9,7 +9,7 @@ begin
       resultt := num1
    else
       resultt := num2;
-   max := resultt;
+   max(resultt, num1);
 end;
 
 begin

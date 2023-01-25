@@ -1,6 +1,14 @@
 program p;
 var i, b:integer;
+
+function f(i:integer):string;
 begin
-while i:=0 do
+for i:=0 downto 5 do
+        write('a');
+end;
+
+begin
+while i=0 do
 b:=i;
+f(1);
 end.

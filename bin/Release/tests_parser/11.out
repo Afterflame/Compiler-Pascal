@@ -1,2 +1,33 @@
-Can not cast "INTEGER" to "BOOLEAN" at 4 8
-
+ Programm
+ ÃÄÄ Heading
+ ³   ÀÄÄ P
+ ÃÄÄ I
+ ÃÄÄ B
+ ÃÄÄ F : Function
+ ³   ÀÄÄ CompoundStatement
+ ³       ÃÄÄ ForStatementNode -1
+ ³       ³   ÃÄÄ I
+ ³       ³   ÃÄÄ Signed Factor(+)
+ ³       ³   ³   ÀÄÄ 0
+ ³       ³   ÃÄÄ Signed Factor(+)
+ ³       ³   ³   ÀÄÄ 5
+ ³       ³   ÀÄÄ WRITE
+ ³       ³       ÀÄÄ Signed Factor(+)
+ ³       ³           ÀÄÄ UConst
+ ³       ³               ÀÄÄ a
+ ³       ÀÄÄ EmptyStatement
+ ÀÄÄ CompoundStatement
+     ÃÄÄ WhileStatementNode
+     ³   ÃÄÄ =
+     ³   ³   ÃÄÄ Signed Factor(+)
+     ³   ³   ³   ÀÄÄ I : Var
+     ³   ³   ÀÄÄ Signed Factor(+)
+     ³   ³       ÀÄÄ 0
+     ³   ÀÄÄ AssignStatement
+     ³       ÃÄÄ B : Var
+     ³       ÀÄÄ Signed Factor(+)
+     ³           ÀÄÄ I : Var
+     ÃÄÄ F
+     ³   ÀÄÄ Signed Factor(+)
+     ³       ÀÄÄ 1
+     ÀÄÄ EmptyStatement

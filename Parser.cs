@@ -269,26 +269,24 @@ namespace Compiler
         {
             Require_KeyWord(Lexem.KeyWord.FUNCTION);
             var identifier = ParseIdentifier();
-            SymTable params_ = new SymTable();
+            var symFunc = new SymFunc(identifier.value, new SymTable(), new SymTable(), new SymType(null), new CompoundStatementNode(new List<Node>()));
+            symFunc.locals_.Add(symFunc);
             SymTable all_vars = new SymTable();
-            all_vars.Add(new SymVar(identifier.value, symTableStack.Get("INTEGER").AsType()));
-            symTableStack.AddTable(params_);
-            lexer.SaveState();
+            symTableStack.AddTable(symFunc.params_);
             if (lexer.Token.Value.Equals(Lexem.SpecialSymbol.LParenthese))
             {
                 ParseFParamenerList();
             }
-            all_vars.AddRange(params_);
+            all_vars.AddRange(symFunc.params_);
             Require_Special(Lexem.SpecialSymbol.Colon, ":");
-            var type_ = ParseTypeIdentifier();
+            symFunc.type_ = ParseTypeIdentifier();
             Require_Special(Lexem.SpecialSymbol.Semicolon, ";");
-            SymTable locals_ = new SymTable();
-            symTableStack.AddTable(locals_);
+            symTableStack.AddTable(symFunc.locals_);
             ParseLocals();
-            all_vars.AddRange(locals_);
-            locals_.Add(new SymVar(identifier.value, type_));
-            var body = ParseCompoundStatement();
-            var symFunc = new SymFunc(identifier.value, params_, locals_, type_, body);
+            symFunc.locals_.Add(new SymVar("RESULT", symFunc.type_));
+            all_vars.AddRange(symFunc.locals_);
+            symFunc.body = ParseCompoundStatement();
+            symFunc.locals_.PopFirst();
             symTableStack.PopTable();
             symTableStack.PopTable();
             symTableStack.Add(symFunc);
@@ -299,18 +297,21 @@ namespace Compiler
         {
             Require_KeyWord(Lexem.KeyWord.PROCEDURE);
             var identifier = ParseIdentifier();
-            SymTable params_ = new SymTable();
-            symTableStack.AddTable(params_);
-            lexer.SaveState();
+            var symProc = new SymProc(identifier.value, new SymTable(), new SymTable(), new CompoundStatementNode(new List<Node>()));
+            symProc.locals_.Add(symProc);
+            SymTable all_vars = new SymTable();
+            symTableStack.AddTable(symProc.params_);
             if (lexer.Token.Value.Equals(Lexem.SpecialSymbol.LParenthese))
             {
                 ParseFParamenerList();
             }
+            all_vars.AddRange(symProc.params_);
             Require_Special(Lexem.SpecialSymbol.Semicolon, ";");
-            SymTable locals_ = new SymTable();
-            symTableStack.AddTable(locals_);
-            var body = ParseCompoundStatement();
-            var symProc = new SymProc(identifier.value, params_, locals_, body);
+            symTableStack.AddTable(symProc.locals_);
+            ParseLocals();
+            all_vars.AddRange(symProc.locals_);
+            symProc.body = ParseCompoundStatement();
+            symProc.locals_.PopFirst();
             symTableStack.PopTable();
             symTableStack.PopTable();
             symTableStack.Add(symProc);
@@ -684,22 +685,23 @@ namespace Compiler
         }
         public ExprNode ParseSignedFactor()
         {
-            int sign = 0;
+            int sign = 39;
 
             while (lexer.Token.Value.Equals(Lexem.SpecialSymbol.Plus) || lexer.Token.Value.Equals(Lexem.SpecialSymbol.Minus))
             {
                 if (lexer.Token.Value.Equals(Lexem.SpecialSymbol.Minus))
                 {
-                    sign = -1;
+                    sign *= -1;
                 }
                 else
                 {
-                    sign = 1;
+                    sign *= 1;
                 }
+                sign = Math.Sign(sign);
                 lexer.NextToken();
             }
             var factor = ParseFactor();
-            if (sign != 0 && (factor.GetNodeType() != symTableStack.Get("INTEGER") || factor.GetNodeType() != symTableStack.Get("REAL")))
+            if (sign != 39 && (factor.GetNodeType() != symTableStack.Get("INTEGER") && factor.GetNodeType() != symTableStack.Get("REAL")))
             {
                 throw new ArgumentException(ErrorConstructor.GetPositionMassage(lexer.Line, lexer.Idx, Error.InvalidAction, sign > 0 ? "+" : "-"));
             }
