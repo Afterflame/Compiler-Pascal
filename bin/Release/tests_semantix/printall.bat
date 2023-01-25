@@ -12,5 +12,6 @@ for %%t in (*.in) do (
 	type %%~nt.out
 	echo:
 	echo:
+	set /p input=
 )
 pause
