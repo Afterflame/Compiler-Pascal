@@ -103,7 +103,7 @@ namespace Compiler
             {
                 get
                 {
-                    return Decimal.ToInt32(value);
+                        return Decimal.ToInt32(value);
                 }
             }
             public void AddDigit(int a)
@@ -113,6 +113,11 @@ namespace Compiler
             public void SetBase(int a)
             {
                 c_base = a;
+            }
+            public void SetAsBase()
+            {
+                c_base = Decimal.ToInt32(value);
+                value = 0;
             }
         }
         public class URealData

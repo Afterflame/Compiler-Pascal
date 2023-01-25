@@ -136,6 +136,7 @@ namespace Compiler
 
         static void Main(string[] args)
         {
+            Console.ReadKey();
             SetupWithArgs(args);
             if (args == null || args.Length == 0)
             {
@@ -158,7 +159,6 @@ namespace Compiler
                     Console.WriteLine(ex.Message);
                 }
             }
-            Console.ReadKey();
         }
     }
 }

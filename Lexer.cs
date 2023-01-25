@@ -305,6 +305,11 @@ namespace Compiler
                         currentStates.Add(State.Slash);
                         currentStates.Remove(State.Start);
                     }));
+                    lexerFSM[State.Start].Add(Event.LCurly, new Action<char>((ch) =>
+                    {
+                        currentStates.Add(State.Comment_curly);
+                        currentStates.Remove(State.Start);
+                    }));
                     lexerFSM[State.Start].Add(Event.Equal, new Action<char>((ch) =>
                     {
                         specialSymbolData.Value = Lexem.SpecialSymbol.Equal;
